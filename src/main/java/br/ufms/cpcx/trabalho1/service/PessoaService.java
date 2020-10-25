@@ -4,6 +4,9 @@ import br.ufms.cpcx.trabalho1.entity.Pessoa;
 import br.ufms.cpcx.trabalho1.entity.PessoaFisica;
 import br.ufms.cpcx.trabalho1.entity.PessoaJuridica;
 import br.ufms.cpcx.trabalho1.enuns.ETipoPessoa;
+import br.ufms.cpcx.trabalho1.exception.CNPJExistenteException;
+import br.ufms.cpcx.trabalho1.exception.CPFExistenteException;
+import br.ufms.cpcx.trabalho1.exception.DadosIncorretosException;
 import br.ufms.cpcx.trabalho1.exception.DadosInvalidosException;
 import br.ufms.cpcx.trabalho1.exception.DadosObrigatoriosException;
 import br.ufms.cpcx.trabalho1.exception.RegistroInexistenteException;
@@ -40,6 +43,15 @@ public class PessoaService {
         return pessoaRepository.findAll();
     }
 
+    public List<? extends Pessoa> buscarTodosPorTipo(ETipoPessoa tipo) {
+        if (ETipoPessoa.FISICA.equals(tipo)) {
+            return pessoaFisicaRepository.findAll();
+        } else if (ETipoPessoa.JURIDICA.equals(tipo)) {
+            return pessoaJuridicaRepository.findAll();
+        }
+        throw new DadosIncorretosException(ConstantesErros.Generic.DADOS_INCORRETOS_EXECEPTION, null);
+    }
+
     public Optional<PessoaFisica> buscarPorIdPessoaFisica(Long id) {
         return pessoaFisicaRepository.findById(id);
     }
@@ -49,8 +61,13 @@ public class PessoaService {
     }
 
     public PessoaFisica salvar(PessoaFisica pessoaFisica) {
-        validarIdadade(pessoaFisica);
         validarCPF(pessoaFisica);
+
+        boolean jaExiste = pessoaFisicaRepository.existsByCpf(pessoaFisica.getCpf());
+        if (jaExiste) {
+            throw new CPFExistenteException(ConstantesErros.Pessoa.CPF_EXISTENTE_EXCEPTION, null);
+        }
+        validarIdadade(pessoaFisica);
 
         try {
             pessoaFisica.setTipo(ETipoPessoa.FISICA.getValue());
@@ -61,8 +78,15 @@ public class PessoaService {
     }
 
     public PessoaJuridica salvar(PessoaJuridica pessoaJuridica) {
-        validarIdadade(pessoaJuridica);
         validarCNPJ(pessoaJuridica);
+
+        Boolean jaExiste = pessoaJuridicaRepository.existsByCnpj(pessoaJuridica.getCnpj());
+
+        if (jaExiste) {
+            throw new CNPJExistenteException(ConstantesErros.Pessoa.CNPJ_EXISTENTE_EXCEPTION, null);
+        }
+
+        validarIdadade(pessoaJuridica);
 
         try {
             pessoaJuridica.setTipo(ETipoPessoa.JURIDICA.getValue());
@@ -73,6 +97,12 @@ public class PessoaService {
     }
 
     public PessoaFisica alterar(PessoaFisica pessoaFisica) {
+        boolean jaExiste = pessoaFisicaRepository.existsById(pessoaFisica.getId());
+
+        if (!jaExiste) {
+            throw new RegistroInexistenteException(ConstantesErros.Generic.REGISTRO_INEXISTENTE_EXCEPTION, null);
+        }
+
         validarIdadade(pessoaFisica);
 
         try {
@@ -89,6 +119,12 @@ public class PessoaService {
     }
 
     public Pessoa alterar(PessoaJuridica pessoaJuridica) {
+        boolean jaExiste = pessoaJuridicaRepository.existsById(pessoaJuridica.getId());
+
+        if (!jaExiste) {
+            throw new RegistroInexistenteException(ConstantesErros.Generic.REGISTRO_INEXISTENTE_EXCEPTION, null);
+        }
+
         validarIdadade(pessoaJuridica);
 
         try {
@@ -127,11 +163,6 @@ public class PessoaService {
             throw new DadosObrigatoriosException(ConstantesErros.Generic.DADOS_OBRIGATORIOS_EXECEPTION, null);
         }
 
-        boolean jaExiste = pessoaFisicaRepository.existsById(pessoaFisica.getId());
-
-        if (!jaExiste) {
-            throw new RegistroInexistenteException(ConstantesErros.Generic.REGISTRO_INEXISTENTE_EXCEPTION, null);
-        }
         if (!ValidaCPF.isCPF(pessoaFisica.getCpf())) {
             throw new DadosInvalidosException(ConstantesErros.Generic.DADOS_INVALIDOS_EXECEPTION, null);
         }
@@ -144,11 +175,6 @@ public class PessoaService {
             throw new DadosObrigatoriosException(ConstantesErros.Generic.DADOS_OBRIGATORIOS_EXECEPTION, null);
         }
 
-        boolean jaExiste = pessoaJuridicaRepository.existsById(pessoaJuridica.getId());
-
-        if (!jaExiste) {
-            throw new RegistroInexistenteException(ConstantesErros.Generic.REGISTRO_INEXISTENTE_EXCEPTION, null);
-        }
         if (!ValidaCNPJ.isCNPJ(cnpj)) {
             throw new DadosInvalidosException(ConstantesErros.Generic.DADOS_INVALIDOS_EXECEPTION, null);
         }

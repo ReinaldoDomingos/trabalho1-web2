@@ -1,8 +1,8 @@
 package br.ufms.cpcx.trabalho1.repository;
 
 import br.ufms.cpcx.trabalho1.dto.ProdutoDTO;
-import br.ufms.cpcx.trabalho1.entity.Cliente;
 import br.ufms.cpcx.trabalho1.entity.Produto;
+import br.ufms.cpcx.trabalho1.entity.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -19,5 +19,5 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
 
     //HQL
     @Query(" select distinct ip.pedido.pessoa from ItemPedido ip where ip.produto.id = ?1")
-    List<Cliente> buscarClientesPorProduto(Long idProduto);
+    List<Usuario> buscarClientesPorProduto(Long idProduto);
 }

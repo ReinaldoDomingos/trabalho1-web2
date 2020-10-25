@@ -1,5 +1,6 @@
 package br.ufms.cpcx.trabalho1.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,7 +20,7 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "TB_USUARIO")
-public abstract class Usuario {
+public class Usuario {
 
     private static final long serialVersionUID = 1L;
 
@@ -28,17 +29,18 @@ public abstract class Usuario {
     @Column(name = "US_ID")
     private Long id;
 
+    @JsonBackReference
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PES_ID", updatable = false, insertable = false)
     private Pessoa pessoa;
 
-    @Column(name = "PES_ID")
+    @Column(name = "PES_ID", unique = true, nullable = false)
     private Long pessoaId;
 
-    @Column(name = "US_LOGIN")
+    @Column(name = "US_LOGIN", unique = true, nullable = false)
     private String login;
 
-    @Column(name = "US_SENHA")
+    @Column(name = "US_SENHA", nullable = false)
     private String senha;
 
     @Column(name = "US_IS_ADMINISTRADOR")

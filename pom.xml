@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>br.ufms.cpcx</groupId>
-    <artifactId>balan</artifactId>
+    <artifactId>trabalho1</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>balan</name>
+    <name>trabalho1</name>
     <description>Demo project for Spring Boot</description>
 
     <properties>
