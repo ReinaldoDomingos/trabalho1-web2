@@ -20,6 +20,6 @@ public class PessoaJuridica extends Pessoa {
     private static final long serialVersionUID = 1L;
     public static final String DISCRIMINATOR_VALUE = "JURIDICA";
 
-    @Column(name = "PJ_CNPJ", length = 14, nullable = false)
+    @Column(name = "PJ_CNPJ", length = 14, nullable = false, unique = true)
     private String cnpj;
 }

@@ -23,6 +23,6 @@ public class PessoaFisica extends Pessoa {
     @Column(name = "PF_RG", length = 11, nullable = false)
     private String rg;
 
-    @Column(name = "PF_CPF", length = 14, nullable = false)
+    @Column(name = "PF_CPF", length = 14, nullable = false, unique = true)
     private String cpf;
 }

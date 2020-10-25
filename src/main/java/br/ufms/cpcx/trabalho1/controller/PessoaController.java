@@ -1,6 +1,5 @@
 package br.ufms.cpcx.trabalho1.controller;
 
-import br.ufms.cpcx.trabalho1.entity.Pessoa;
 import br.ufms.cpcx.trabalho1.entity.PessoaFisica;
 import br.ufms.cpcx.trabalho1.entity.PessoaJuridica;
 import br.ufms.cpcx.trabalho1.exception.GenericException;
@@ -21,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Optional;
+
 @Controller
 @RequestMapping("/api/pessoa")
 public class PessoaController {
@@ -36,9 +37,27 @@ public class PessoaController {
     }
 
     @ResponseBody
-    @GetMapping("/{id}")
-    public ResponseEntity<?> buscarPorId(@PathVariable("id") Long id) {
-        return new ResponseEntity<>(pessoaService.buscarPorId(id), HttpStatus.OK);
+    @GetMapping("/fisica/{id}")
+    public ResponseEntity<?> buscarPorIdPessoaFisica(@PathVariable("id") Long id) {
+        Optional<PessoaFisica> optional = pessoaService.buscarPorIdPessoaFisica(id);
+
+        if (optional.isPresent()) {
+            return new ResponseEntity<>(optional.get(), HttpStatus.OK);
+        } else {
+            return ResponseEntity.noContent().build();
+        }
+    }
+
+    @ResponseBody
+    @GetMapping("/juridica/{id}")
+    public ResponseEntity<?> buscarPorIdPessoaJuridica(@PathVariable("id") Long id) {
+        Optional<PessoaJuridica> optional = pessoaService.buscarPorIdPessoaJuridica(id);
+
+        if (optional.isPresent()) {
+            return new ResponseEntity<>(optional.get(), HttpStatus.OK);
+        } else {
+            return ResponseEntity.noContent().build();
+        }
     }
 
     @ResponseBody
@@ -75,8 +94,28 @@ public class PessoaController {
     }
 
     @ResponseBody
-    @PutMapping("{id}")
-    public ResponseEntity<?> alterar(@PathVariable("id") Long id, @RequestBody Pessoa body) {
-        return new ResponseEntity<>(pessoaService.alterar(body), HttpStatus.ACCEPTED);
+    @PutMapping("/fisica/{id}")
+    public ResponseEntity<?> alterar(@PathVariable("id") Long id, @RequestBody PessoaFisica body) {
+        try {
+            return new ResponseEntity<>(pessoaService.alterar(body), HttpStatus.ACCEPTED);
+        } catch (GenericException e) {
+            return new ResponseEntity<>(e.toJson(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            LOGGER.error(ConstantesErros.Generic.ATUALIZAR_EXECEPTION, e);
+            throw new GenericException(ConstantesErros.Generic.ATUALIZAR_EXECEPTION, e);
+        }
+    }
+
+    @ResponseBody
+    @PutMapping("/juridica/{id}")
+    public ResponseEntity<?> alterar(@PathVariable("id") Long id, @RequestBody PessoaJuridica body) {
+        try {
+            return new ResponseEntity<>(pessoaService.alterar(body), HttpStatus.ACCEPTED);
+        } catch (GenericException e) {
+            return new ResponseEntity<>(e.toJson(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            LOGGER.error(ConstantesErros.Generic.ATUALIZAR_EXECEPTION, e);
+            throw new GenericException(ConstantesErros.Generic.ATUALIZAR_EXECEPTION, e);
+        }
     }
 }
