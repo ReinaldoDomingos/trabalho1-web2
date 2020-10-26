@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Optional;
@@ -37,26 +36,7 @@ public class PessoaController {
     @Autowired
     private UsuarioService usuarioService;
 
-    @GetMapping
-    @ResponseBody
-    public ResponseEntity<?> buscarTodas(@RequestHeader("usuario") String usuario,
-                                         @RequestHeader("senha") String senha) {
-        try {
-            usuarioService.login(usuario, senha);
-            return new ResponseEntity<>(pessoaService.buscarTodos(), HttpStatus.OK);
-        } catch (GenericException e) {
-            return new ResponseEntity<>(e.toJson(), HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            LOGGER.error(ConstantesErros.Generic.BUSCAR_EXECEPTION, e);
-            throw new GenericException(ConstantesErros.Generic.BUSCAR_EXECEPTION, e);
-        }
-    }
-
-    @ResponseBody
-    @GetMapping(params = {"tipo"})
-    public ResponseEntity<?> buscarPorIdPessoaFisica(@RequestParam("tipo") ETipoPessoa tipoPessoa,
-                                                     @RequestHeader("usuario") String usuario,
-                                                     @RequestHeader("senha") String senha) {
+    private ResponseEntity<?> buscarTodos(String usuario, String senha, ETipoPessoa tipoPessoa) {
         try {
             usuarioService.login(usuario, senha);
             return new ResponseEntity<>(pessoaService.buscarTodosPorTipo(tipoPessoa), HttpStatus.OK);
@@ -66,6 +46,20 @@ public class PessoaController {
             LOGGER.error(ConstantesErros.Generic.BUSCAR_EXECEPTION, e);
             throw new GenericException(ConstantesErros.Generic.BUSCAR_EXECEPTION, e);
         }
+    }
+
+    @ResponseBody
+    @GetMapping("/fisica")
+    public ResponseEntity<?> buscarTodosPessoaFisica(@RequestHeader("usuario") String usuario,
+                                                     @RequestHeader("senha") String senha) {
+        return buscarTodos(usuario, senha, ETipoPessoa.FISICA);
+    }
+
+    @ResponseBody
+    @GetMapping("/juridica")
+    public ResponseEntity<?> buscarTodosPessoaJuridica(@RequestHeader("usuario") String usuario,
+                                                       @RequestHeader("senha") String senha) {
+        return buscarTodos(usuario, senha, ETipoPessoa.JURIDICA);
     }
 
     @ResponseBody
@@ -114,11 +108,9 @@ public class PessoaController {
 
     @ResponseBody
     @PostMapping("/fisica")
-    public ResponseEntity<?> salvar(@RequestBody PessoaFisica pessoaFisica,
-                                    @RequestHeader("usuario") String usuario,
-                                    @RequestHeader("senha") String senha) {
+    public ResponseEntity<?> salvar(@RequestBody PessoaFisica pessoaFisica) {
         try {
-            usuarioService.loginAdministrador(usuario, senha);
+            pessoaFisica.setId(null);
             return new ResponseEntity<>(pessoaService.salvar(pessoaFisica), HttpStatus.CREATED);
         } catch (GenericException e) {
             return new ResponseEntity<>(e.toJson(), HttpStatus.BAD_REQUEST);
@@ -130,11 +122,9 @@ public class PessoaController {
 
     @ResponseBody
     @PostMapping("/juridica")
-    public ResponseEntity<?> salvar(@RequestBody PessoaJuridica pessoaJuridica,
-                                    @RequestHeader("usuario") String usuario,
-                                    @RequestHeader("senha") String senha) {
+    public ResponseEntity<?> salvar(@RequestBody PessoaJuridica pessoaJuridica) {
         try {
-            usuarioService.loginAdministrador(usuario, senha);
+            pessoaJuridica.setId(null);
             return new ResponseEntity<>(pessoaService.salvar(pessoaJuridica), HttpStatus.CREATED);
         } catch (GenericException e) {
             return new ResponseEntity<>(e.toJson(), HttpStatus.BAD_REQUEST);
@@ -156,19 +146,20 @@ public class PessoaController {
         } catch (GenericException e) {
             return new ResponseEntity<>(e.toJson(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            LOGGER.error(ConstantesErros.Generic.INSERIR_EXECEPTION, e);
-            throw new GenericException(ConstantesErros.Generic.INSERIR_EXECEPTION, e);
+            LOGGER.error(ConstantesErros.Generic.EXCLUIR_EXECEPTION, e);
+            throw new GenericException(ConstantesErros.Generic.EXCLUIR_EXECEPTION, e);
         }
     }
 
     @ResponseBody
     @PutMapping("/fisica/{id}")
-    public ResponseEntity<?> alterar(@PathVariable("id") Long id, @RequestBody PessoaFisica body,
-                                     @RequestHeader("usuario") String usuario,
+    public ResponseEntity<?> alterar(@PathVariable("id") Long id, @RequestBody PessoaFisica usuario,
+                                     @RequestHeader("usuario") String login,
                                      @RequestHeader("senha") String senha) {
         try {
-            usuarioService.loginAdministrador(usuario, senha);
-            return new ResponseEntity<>(pessoaService.alterar(body), HttpStatus.ACCEPTED);
+            usuarioService.loginAdministrador(login, senha);
+            usuario.setId(id);
+            return new ResponseEntity<>(pessoaService.alterar(usuario), HttpStatus.ACCEPTED);
         } catch (GenericException e) {
             return new ResponseEntity<>(e.toJson(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {

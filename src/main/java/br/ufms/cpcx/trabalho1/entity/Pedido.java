@@ -17,7 +17,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -37,26 +36,23 @@ public class Pedido {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "PED_STATUS")
+    @Column(name = "PED_STATUS", nullable = false)
     private EStatusPedido status;
-
-    @Transient
-    private String statusNome;
 
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "PES_ID", updatable = false, insertable = false)
     private Pessoa pessoa;
 
-    @Column(name = "PES_ID")
+    @Column(name = "PES_ID", nullable = false)
     private Long pessoaId;
 
-    @Column(name = "PED_DATA_COMPRA")
+    @Column(name = "PED_DATA_COMPRA", nullable = false)
     private LocalDate dataCompra;
 
-    @Column(name = "PED_DATA_ENTREGA")
+    @Column(name = "PED_DATA_ENTREGA", nullable = false)
     private LocalDate dataEntrega;
 
-    @Column(name = "PED_PERCENTUAL_DESCONTO")
+    @Column(name = "PED_PERCENTUAL_DESCONTO", nullable = false)
     private BigDecimal percentualDesconto;
 }

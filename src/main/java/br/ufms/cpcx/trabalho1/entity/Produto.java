@@ -26,22 +26,22 @@ public class Produto {
     @Column(name = "PRO_ID")
     private Long id;
 
-    @Column(name = "PRO_DESCRICAO")
+    @Column(name = "PRO_DESCRICAO", nullable = false)
     private String descricao;
 
-    @Column(name = "PRO_QUANTIDADE_ESTOQUE")
+    @Column(name = "PRO_QUANTIDADE_ESTOQUE", nullable = false)
     private Long quantidadeEstoque;
 
-    @Column(name = "PRO_IDADE_PERMITIDA")
+    @Column(name = "PRO_IDADE_PERMITIDA", nullable = false)
     private Integer idadePermitida;
 
-    @Column(name = "PRO_PRECO_COMPRA", precision = 20, scale = 2)
+    @Column(name = "PRO_PRECO_COMPRA", precision = 20, scale = 2, nullable = false)
     private BigDecimal precoCompra;
 
-    @Column(name = "PRO_PRECO_VENDA_FISICA", precision = 20, scale = 2)
+    @Column(name = "PRO_PRECO_VENDA_FISICA", precision = 20, scale = 2, nullable = false)
     private BigDecimal precoVendaFisica;
 
-    @Column(name = "PRO_PRECO_VENDA_JURIDICA", precision = 20, scale = 2)
+    @Column(name = "PRO_PRECO_VENDA_JURIDICA", precision = 20, scale = 2, nullable = false)
     private BigDecimal precoVendaJuridica;
 
     public Produto(Long id) {

@@ -23,7 +23,7 @@ public class CompraService {
     public CompraPojo executar(CompraPojo compraPojo) {
         Pedido pedidoSalvo = pedidoRepository.save(compraPojo.gerarPedido());
 
-        ArrayList<ItemPedidoPojo> resutadoIpPojo = new ArrayList();
+        ArrayList<ItemPedidoPojo> resutadoIpPojo = new ArrayList<>();
 
         for (ItemPedidoPojo ipPojo : compraPojo.getItemPedidoDTOS()) {
             ItemPedido itemPedidoSalvo = itemPedidoRepository.save(ipPojo.gerarItemPedido(pedidoSalvo));

@@ -18,6 +18,4 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
     //HQL
     @Query("select p.status from Pedido p where p.id = ?1")
     EStatusPedido buscarStatusPedido(Long id);
-
-    Boolean existsByPessoaId(Long idPessoa);
 }

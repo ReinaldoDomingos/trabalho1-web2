@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping("/api/usuario")
 public class UsuarioController {
-    private static final Logger LOGGER = LoggerFactory.getLogger(PessoaController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UsuarioController.class);
 
     @Autowired
     private UsuarioService usuarioService;
@@ -74,8 +74,8 @@ public class UsuarioController {
         }
     }
 
-    @GetMapping("/{id}/produto")
     @ResponseBody
+    @GetMapping("/{id}/produto")
     public ResponseEntity<?> buscarProdutoPorUsuario(@PathVariable("id") Long id,
                                                      @RequestHeader("usuario") String usuario,
                                                      @RequestHeader("senha") String senha) {
@@ -116,20 +116,21 @@ public class UsuarioController {
         } catch (GenericException e) {
             return new ResponseEntity<>(e.toJson(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            LOGGER.error(ConstantesErros.Generic.ATUALIZAR_EXECEPTION, e);
-            throw new GenericException(ConstantesErros.Generic.ATUALIZAR_EXECEPTION, e);
+            LOGGER.error(ConstantesErros.Generic.EXCLUIR_EXECEPTION, e);
+            throw new GenericException(ConstantesErros.Generic.EXCLUIR_EXECEPTION, e);
         }
     }
 
     @PutMapping("{id}")
     @ResponseBody
-    public ResponseEntity<?> alterar(@PathVariable("id") Long id, @RequestBody Usuario body,
-                                     @RequestHeader("usuario") String usuario,
+    public ResponseEntity<?> alterar(@PathVariable("id") Long id, @RequestBody Usuario usuario,
+                                     @RequestHeader("usuario") String login,
                                      @RequestHeader("senha") String senha) {
 
         try {
-            usuarioService.loginAdministrador(usuario, senha);
-            return new ResponseEntity<>(usuarioService.alterar(body), HttpStatus.ACCEPTED);
+            usuarioService.loginAdministrador(login, senha);
+            usuario.setId(id);
+            return new ResponseEntity<>(usuarioService.alterar(usuario), HttpStatus.ACCEPTED);
         } catch (GenericException e) {
             return new ResponseEntity<>(e.toJson(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {

@@ -4,6 +4,7 @@ import br.ufms.cpcx.trabalho1.entity.Usuario;
 import br.ufms.cpcx.trabalho1.exception.DadosIncorretosException;
 import br.ufms.cpcx.trabalho1.exception.DadosInvalidosException;
 import br.ufms.cpcx.trabalho1.exception.DadosObrigatoriosException;
+import br.ufms.cpcx.trabalho1.exception.RegistroInexistenteException;
 import br.ufms.cpcx.trabalho1.exception.UsuarioSemPermissaoException;
 import br.ufms.cpcx.trabalho1.repository.PedidoRepository;
 import br.ufms.cpcx.trabalho1.repository.ProdutoRepository;
@@ -15,6 +16,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static java.util.Objects.isNull;
@@ -56,16 +58,25 @@ public class UsuarioService {
     }
 
     public Object buscarPorId(Long id) {
+        try {
 
-        return usuarioRepository.findById(id).get();
+            return usuarioRepository.findById(id).get();
+        } catch (NoSuchElementException e) {
+            throw new RegistroInexistenteException(ConstantesErros.Generic.REGISTRO_INEXISTENTE_EXCEPTION, null);
+        }
     }
 
     public Object buscarPedidosPorUsuario(Long id) {
         return pedidoRepository.findByPessoaId(id);
     }
 
-    public Object buscarProdutoPorUsuario(Long id) {
-        return produtoRepository.findByPessoa(id);
+    public Object buscarProdutoPorUsuario(Long idUsuario) {
+        Optional<Usuario> usuario = usuarioRepository.findById(idUsuario);
+        if (usuario.isPresent()) {
+            return produtoRepository.findByPessoa(usuario.get().getPessoaId());
+        } else {
+            throw new RegistroInexistenteException(ConstantesErros.Generic.REGISTRO_INEXISTENTE_EXCEPTION, null);
+        }
     }
 
     public Usuario salvar(Usuario usuario) {

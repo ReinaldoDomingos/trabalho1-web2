@@ -4,8 +4,8 @@ public enum EStatusPedido {
     REALIZADO("Realizado", "R"),
     CANCELADO("Cancelado", "C");
 
-    private String nome;
-    private String sigla;
+    private final String nome;
+    private final String sigla;
 
     EStatusPedido(String nome, String sigla){
         this.nome = nome;

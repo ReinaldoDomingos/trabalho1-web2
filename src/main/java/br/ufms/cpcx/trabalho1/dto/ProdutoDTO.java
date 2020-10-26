@@ -1,6 +1,7 @@
 package br.ufms.cpcx.trabalho1.dto;
 
 import br.ufms.cpcx.trabalho1.entity.Produto;
+import br.ufms.cpcx.trabalho1.enuns.ETipoPessoa;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,39 +14,21 @@ import java.math.BigDecimal;
 public class ProdutoDTO {
 
     private Long id;
+    private BigDecimal preco;
     private String descricao;
     private Long quantidadeEstoque;
-    private BigDecimal precoCompra;
-    private BigDecimal precoVendaFisica;
-    private Long quantidadeCompras;
-    private BigDecimal totalPrecoCompra;
-    private BigDecimal totalPrecoVenda;
+    private Integer idadePermitida;
 
-    public ProdutoDTO(Produto produto) {
+    public ProdutoDTO(Produto produto, ETipoPessoa tipoPessoa) {
         this.id = produto.getId();
         this.descricao = produto.getDescricao();
         this.quantidadeEstoque = produto.getQuantidadeEstoque();
-        this.precoCompra = produto.getPrecoCompra();
-        this.precoVendaFisica = produto.getPrecoVendaFisica();
-    }
+        this.idadePermitida = produto.getIdadePermitida();
 
-    public ProdutoDTO(Produto produto, Long quantidadeCompras) {
-        this.id = produto.getId();
-        this.descricao = produto.getDescricao();
-        this.quantidadeEstoque = produto.getQuantidadeEstoque();
-        this.precoCompra = produto.getPrecoCompra();
-        this.precoVendaFisica = produto.getPrecoVendaFisica();
-        this.quantidadeCompras = quantidadeCompras;
-    }
-
-    public ProdutoDTO(Produto produto, Long quantidadeCompras, BigDecimal totalPrecoCompra, BigDecimal totalPrecoVenda) {
-        this.id = produto.getId();
-        this.descricao = produto.getDescricao();
-        this.quantidadeEstoque = produto.getQuantidadeEstoque();
-        this.precoCompra = produto.getPrecoCompra();
-        this.precoVendaFisica = produto.getPrecoVendaFisica();
-        this.quantidadeCompras = quantidadeCompras;
-        this.totalPrecoCompra = totalPrecoCompra;
-        this.totalPrecoVenda = totalPrecoVenda;
+        if (tipoPessoa.equals(ETipoPessoa.FISICA)) {
+            this.preco = produto.getPrecoVendaFisica();
+        } else if (tipoPessoa.equals(ETipoPessoa.JURIDICA)) {
+            this.preco = produto.getPrecoVendaJuridica();
+        }
     }
 }

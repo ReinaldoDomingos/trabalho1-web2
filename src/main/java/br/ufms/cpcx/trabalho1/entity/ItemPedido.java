@@ -28,13 +28,13 @@ public class ItemPedido {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "PED_ID")
+    @JoinColumn(name = "PED_ID", nullable = false)
     private Pedido pedido;
 
     @ManyToOne
-    @JoinColumn(name = "PRO_ID")
+    @JoinColumn(name = "PRO_ID", nullable = false)
     private Produto produto;
 
-    @Column(name = "IP_QUANTIDADE")
+    @Column(name = "IP_QUANTIDADE", nullable = false)
     private Long quantidade;
 }

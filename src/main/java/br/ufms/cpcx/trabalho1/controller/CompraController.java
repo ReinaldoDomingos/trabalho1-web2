@@ -21,6 +21,6 @@ public class CompraController {
     @PostMapping
     @ResponseBody
     public ResponseEntity<?> salvar(@RequestBody CompraPojo body) {
-        return new ResponseEntity(compraService.executar(body), HttpStatus.CREATED);
+        return new ResponseEntity<>(compraService.executar(body), HttpStatus.CREATED);
     }
 }
