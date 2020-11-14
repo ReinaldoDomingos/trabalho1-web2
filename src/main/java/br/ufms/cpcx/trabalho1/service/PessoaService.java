@@ -4,6 +4,7 @@ import br.ufms.cpcx.trabalho1.entity.Pessoa;
 import br.ufms.cpcx.trabalho1.entity.PessoaFisica;
 import br.ufms.cpcx.trabalho1.entity.PessoaJuridica;
 import br.ufms.cpcx.trabalho1.enuns.ETipoPessoa;
+import br.ufms.cpcx.trabalho1.enuns.EnumSituacao;
 import br.ufms.cpcx.trabalho1.exception.CNPJExistenteException;
 import br.ufms.cpcx.trabalho1.exception.CPFExistenteException;
 import br.ufms.cpcx.trabalho1.exception.DadosIncorretosException;
@@ -23,10 +24,13 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 @Service
 public class PessoaService {
@@ -39,8 +43,31 @@ public class PessoaService {
     @Autowired
     private PessoaJuridicaRepository pessoaJuridicaRepository;
 
-    public List<Pessoa> buscarTodos() {
-        return pessoaRepository.findAll();
+    public List<? extends Pessoa> buscarTodosPorFiltro(ETipoPessoa tipo, EnumSituacao situacao, Long idResponsavel, String nomeResponsavel) {
+        List<? extends Pessoa> retorno = null;
+        List pessoasFisica = pessoaFisicaRepository.findAll();
+        List pessoaJuridicas = pessoaJuridicaRepository.findAll();
+
+        if (ETipoPessoa.FISICA.equals(tipo)) {
+            retorno = pessoasFisica;
+        } else if (ETipoPessoa.JURIDICA.equals(tipo)) {
+            retorno = pessoaJuridicas;
+        } else {
+            pessoaJuridicas.addAll(pessoasFisica);
+            retorno = pessoaJuridicas;
+        }
+
+        if (isNull(idResponsavel) && isNull(tipo) && isNull(situacao) && isNull(nomeResponsavel)) {
+            return retorno.stream()
+                    .sorted(Comparator.comparing(Pessoa::getId))
+                    .collect(Collectors.toList());
+        }
+        return retorno.stream()
+                .filter(p -> isNull(situacao) || p.getSituacao().equals(situacao))
+                .filter(p -> isNull(idResponsavel) || (nonNull(p.getResponsavelId()) && p.getResponsavelId().equals(idResponsavel)))
+                .filter(p -> isNull(nomeResponsavel) || (nonNull(p.getResponsavelId()) && p.getResponsavel().getNome().equals(nomeResponsavel)))
+                .collect(Collectors.toList());
+
     }
 
     public List<? extends Pessoa> buscarTodosPorTipo(ETipoPessoa tipo) {

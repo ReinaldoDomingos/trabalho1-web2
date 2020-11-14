@@ -29,7 +29,7 @@ import java.time.LocalDate;
 @Table(name = "TB_PESSOA")
 @DiscriminatorColumn(name = "PES_TIPO", discriminatorType = DiscriminatorType.STRING)
 @Inheritance(strategy = InheritanceType.JOINED)
-public abstract class Pessoa {
+public class Pessoa {
 
     private static final long serialVersionUID = 1L;
 

@@ -16,8 +16,12 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
+
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 @Service
 public class ProdutoService {
@@ -25,11 +29,19 @@ public class ProdutoService {
     @Autowired
     private ProdutoRepository produtoRepository;
 
-    public Stream<ProdutoDTO> buscarTodos(Usuario usuario) {
+    public List<ProdutoDTO> buscarTodos(Usuario usuario, String descricao, BigDecimal precoMinimo, BigDecimal precoMaximo) {
         ETipoPessoa tipoPessoa = ETipoPessoa.valueOf(usuario.getPessoa().getTipo());
 
-        return produtoRepository.buscarTodos(getIdade(usuario.getPessoa().getDataNascimento()))
-                .stream().map(produto -> new ProdutoDTO(produto, tipoPessoa));
+        List<ProdutoDTO> retorno = produtoRepository.buscarTodos(getIdade(usuario.getPessoa().getDataNascimento()))
+                .stream()
+                .filter(p -> isNull(descricao) || (nonNull(p.getDescricao()) && p.getDescricao().toLowerCase().contains(descricao.toLowerCase())))
+                .map(produto -> new ProdutoDTO(produto, tipoPessoa))
+                .collect(Collectors.toList());
+
+        return retorno.stream()
+                .filter(p -> isNull(precoMinimo) || p.getPreco().doubleValue() >= precoMinimo.doubleValue())
+                .filter(p -> isNull(precoMaximo) || p.getPreco().doubleValue() <= precoMaximo.doubleValue())
+                .collect(Collectors.toList());
     }
 
     public Produto buscarPorId(Long id) {

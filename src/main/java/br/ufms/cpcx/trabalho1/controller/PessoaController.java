@@ -3,6 +3,7 @@ package br.ufms.cpcx.trabalho1.controller;
 import br.ufms.cpcx.trabalho1.entity.PessoaFisica;
 import br.ufms.cpcx.trabalho1.entity.PessoaJuridica;
 import br.ufms.cpcx.trabalho1.enuns.ETipoPessoa;
+import br.ufms.cpcx.trabalho1.enuns.EnumSituacao;
 import br.ufms.cpcx.trabalho1.exception.GenericException;
 import br.ufms.cpcx.trabalho1.service.PessoaService;
 import br.ufms.cpcx.trabalho1.service.UsuarioService;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Optional;
@@ -40,6 +42,25 @@ public class PessoaController {
         try {
             usuarioService.login(usuario, senha);
             return new ResponseEntity<>(pessoaService.buscarTodosPorTipo(tipoPessoa), HttpStatus.OK);
+        } catch (GenericException e) {
+            return new ResponseEntity<>(e.toJson(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            LOGGER.error(ConstantesErros.Generic.BUSCAR_EXECEPTION, e);
+            throw new GenericException(ConstantesErros.Generic.BUSCAR_EXECEPTION, e);
+        }
+    }
+
+    @ResponseBody
+    @GetMapping
+    public ResponseEntity<?> buscarTodosPorFiltro(@RequestHeader("usuario") String usuario,
+                                                  @RequestHeader("senha") String senha,
+                                                  @RequestParam(value = "tipo", required = false) ETipoPessoa tipo,
+                                                  @RequestParam(value = "situacao", required = false) EnumSituacao situacao,
+                                                  @RequestParam(value = "idResponsavel", required = false) Long idResponsavel,
+                                                  @RequestParam(value = "nomeResponsavel", required = false) String nomeResponsavel) {
+        try {
+            usuarioService.login(usuario, senha);
+            return new ResponseEntity<>(pessoaService.buscarTodosPorFiltro(tipo, situacao, idResponsavel, nomeResponsavel), HttpStatus.OK);
         } catch (GenericException e) {
             return new ResponseEntity<>(e.toJson(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {

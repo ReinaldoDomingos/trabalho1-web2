@@ -20,7 +20,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.math.BigDecimal;
 
 @Controller
 @RequestMapping("/api/produto")
@@ -35,10 +38,14 @@ public class ProdutoController {
 
     @GetMapping
     @ResponseBody
-    public ResponseEntity<?> buscarTodos(@RequestHeader("usuario") String login, @RequestHeader("senha") String senha) {
+    public ResponseEntity<?> buscarTodos(@RequestHeader("usuario") String login,
+                                         @RequestHeader("senha") String senha,
+                                         @RequestParam(value = "descricao", required = false) String descricao,
+                                         @RequestParam(value = "precoMinimo", required = false) BigDecimal precoMinimo,
+                                         @RequestParam(value = "precoMaximo", required = false) BigDecimal precoMaximo) {
         try {
             Usuario usuario = usuarioService.login(login, senha);
-            return new ResponseEntity<>(produtoService.buscarTodos(usuario), HttpStatus.OK);
+            return new ResponseEntity<>(produtoService.buscarTodos(usuario, descricao, precoMinimo, precoMaximo), HttpStatus.OK);
         } catch (GenericException e) {
             return new ResponseEntity<>(e.toJson(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
