@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="pt-br">
+
+<head>
+    <title> pagina de exemplo estrutura basica </title>
+    <meta charset="utf-8">
+    <meta name="author" content="Reinaldo Domingos de Freitas Junior">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="description" content="descrição bacanuda">
+    <meta name="keywords" content="html5, tecnologia">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <script src="node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="css/index.css">
+</head>
+
+<body>
+<div id="app" class="gridContainer">
+    <header class="header top gridItem naoSelecionavel">
+        <span id="btnMenu" v-bind:class="{'hide': navLateralAberta=='false'}" @click="navtoggle()"><i
+                class="material-icons">menu</i></span><span>{{title}}</span>
+    </header>
+    <nav class="nav top gridItem naoSelecionavel" v-show="navLateralAberta || width!='mobile'">
+        <ul>
+            <li class="nav-header">
+                <i class="material-icons">account_circle</i>
+                <h1 class="user-name"> {{user.nome}}</h1>
+                <p class="user-email">{{user.email}}</p>
+            </li>
+            <hr>
+            <li class="item" v-bind:class="{'ativo': itemMenuSelecionado=='inicio'}" @click="selectNavItem('inicio')">
+                <i class="material-icons">home</i><span>Inicio</span>
+            </li>
+            <li class="item" v-bind:class="{'ativo': itemMenuSelecionado=='carrinho'}"
+                id="btnCarrinho" @click="selectNavItem('carrinho')"><i
+                    class="material-icons">local_grocery_store</i><span>Carrinho</span>
+            </li>
+            <li class="item" v-bind:class="{'ativo': itemMenuSelecionado=='pedidos'}"
+                @click="selectNavItem('pedidos')"><i class="material-icons">local_mall</i>
+                <span>Meus pedidos</span>
+            </li>
+            <li class="item" v-bind:class="{'ativo': itemMenuSelecionado=='favoritos'}"
+                @click="selectNavItem('favoritos')"><i class="material-icons">favorite</i>
+                <span>Meus favoritos</span>
+            </li>
+        </ul>
+    </nav>
+    <span id="overshadowed" @click="navtoggle()" v-show="navLateralAberta"></span>
+    <main class="main gridItem">
+        <h1 class="title">Mais vendidos</h1>
+        <div class="dropdown col-10 col-sm-7 col-lg-4 row mb-2">
+            <span class="align-self-center pr-4">Filtrar: </span>
+            <button class="btn btn-secondary dropdown-toggle col align-self-center" type="button"
+                    id="dropdownMenuButton"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {{(filtro)?filtro.nome:'Selecionar'}}
+            </button>
+            <div class="dropdown-menu float-lg-right" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href="#" v-for="categoria in categorias" @click="filtar(categoria)">{{categoria.nome}}</a>
+            </div>
+        </div>
+
+        <div id="produtos">
+            <div class="oferta p-lg-2 mb-2" v-for="produto in orderBy(produtosFiltrados, 'id')">
+                <div class="body">
+                    <img v-bind:src="produto.urlImg">
+                    <span class="badge badge-secondary mb-2">{{produto.categoria.nome}}</span>
+                    <p class="d-lg-block">{{produto.nome}}</p>
+                    <h1 class="d-sm-block m-0 my-lg-1">{{produto.valorDeVenda|formatarReal}}</h1>
+                    <span class="d-block">{{produto.quantidade}} restantes</span>
+                    <hr class="invisible m-0 m-lg-1">
+                    <button class="btn btn-primary container-fluid" @click="vender(produto)">Comprar</button>
+                </div>
+                <div class="descricao"><b>Descrição:</b> {{produto.descricao}}</div>
+            </div>
+        </div>
+        <div id="msg-list-empty" v-show="!produtosFiltrados.length">Não há produtos nessa categoria</div>
+        <div id="loading" class="row" v-show="!produtos.length">
+            <div class="spinner-border text-dark" role="status"></div>
+        </div>
+    </main>
+    <footer class="footer gridItem">
+        <p v-html="msgFooter"></p>
+    </footer>
+</div>
+
+<script src="node_modules/vue/dist/vue.js"></script>
+<script src="node_modules/vue2-filters/dist/vue2-filters.min.js"></script>
+<script src="node_modules/axios/dist/axios.js"></script>
+<script src="js/index.js"></script>
+<script src="js/crud.js"></script>
+<script src="js/home.js"></script>
+</body>
+</html>

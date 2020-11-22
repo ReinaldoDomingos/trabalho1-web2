@@ -1,0 +1,19 @@
+.modal-dialog {
+    /*margin-top: 10%;*/
+}
+
+.modal-backdrop {
+    display: block;
+}
+
+.modal-backdrop:not(.show) {
+    display: none;
+}
+
+.modal .modal-img {
+    text-align: center;
+}
+
+.modal .modal-img img {
+    width: 40%;
+}

@@ -1,0 +1,4 @@
+/front-t2/node_modules/
+/front-t2/package-lock.json
+*.iml
+.idea

@@ -1,0 +1,54 @@
+#produtos caption {
+    caption-side: top;
+}
+
+caption.btn i {
+    float: left;
+}
+
+#btnAdd span {
+    display: none;
+}
+
+.produto .btn {
+    margin-left: 10px;
+    border: none;
+}
+
+.table {
+    padding-bottom: 50px;
+}
+
+@media screen and (max-width: 540px) {
+    .main.gridItem {
+        margin: 0;
+        border-radius: 0;
+    }
+
+    #btnRefresh {
+        display: none;
+    }
+}
+
+@media screen and (min-width: 541px) {
+    body {
+        background-color: white;
+    }
+
+    .btn {
+        display: inherit;
+    }
+
+    #btnAdd span {
+        display: unset;
+    }
+
+    #btnAdd.btn {
+        border-radius: 10px;
+        padding: 10px;
+        display: grid;
+        grid-template-columns: 20px auto;
+        width: 170px;
+        font-weight: bold;
+    }
+}
