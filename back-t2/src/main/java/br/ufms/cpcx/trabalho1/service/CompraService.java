@@ -1,9 +1,9 @@
 package br.ufms.cpcx.trabalho1.service;
 
-import br.ufms.cpcx.trabalho1.pojo.CompraPojo;
-import br.ufms.cpcx.trabalho1.pojo.ItemPedidoPojo;
 import br.ufms.cpcx.trabalho1.entity.ItemPedido;
 import br.ufms.cpcx.trabalho1.entity.Pedido;
+import br.ufms.cpcx.trabalho1.pojo.CompraPojo;
+import br.ufms.cpcx.trabalho1.pojo.ItemPedidoPojo;
 import br.ufms.cpcx.trabalho1.repository.ItemPedidoRepository;
 import br.ufms.cpcx.trabalho1.repository.PedidoRepository;
 import org.springframework.beans.factory.annotation.Autowired;

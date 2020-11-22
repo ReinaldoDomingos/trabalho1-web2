@@ -1,9 +1,9 @@
 package br.ufms.cpcx.trabalho1.controller;
 
-import br.ufms.cpcx.trabalho1.entity.Pedido;
 import br.ufms.cpcx.trabalho1.exception.GenericException;
 import br.ufms.cpcx.trabalho1.service.PedidoService;
 import br.ufms.cpcx.trabalho1.service.UsuarioService;
+import br.ufms.cpcx.trabalho1.entity.Pedido;
 import br.ufms.cpcx.trabalho1.utils.ConstantesErros;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

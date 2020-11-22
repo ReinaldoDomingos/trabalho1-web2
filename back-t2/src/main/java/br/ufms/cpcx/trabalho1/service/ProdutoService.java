@@ -64,8 +64,8 @@ public class ProdutoService {
     }
 
     public Produto alterar(Produto produto) {
-        boolean jaExiste = produtoRepository.existsById(produto.getId());
-        if (jaExiste) {
+        Optional<Produto> optional = produtoRepository.findById(produto.getId());
+        if (optional.isPresent()) {
             validarValores(produto);
             return produtoRepository.save(produto);
         } else {

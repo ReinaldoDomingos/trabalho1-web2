@@ -1,10 +1,10 @@
 package br.ufms.cpcx.trabalho1.controller;
 
-import br.ufms.cpcx.trabalho1.entity.Produto;
-import br.ufms.cpcx.trabalho1.entity.Usuario;
 import br.ufms.cpcx.trabalho1.exception.GenericException;
 import br.ufms.cpcx.trabalho1.service.ProdutoService;
 import br.ufms.cpcx.trabalho1.service.UsuarioService;
+import br.ufms.cpcx.trabalho1.entity.Produto;
+import br.ufms.cpcx.trabalho1.entity.Usuario;
 import br.ufms.cpcx.trabalho1.utils.ConstantesErros;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.math.BigDecimal;
 
 @Controller
+@CrossOrigin("*")
 @RequestMapping("/api/produto")
 public class ProdutoController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProdutoController.class);
@@ -122,13 +124,13 @@ public class ProdutoController {
 
     @PutMapping("{id}")
     @ResponseBody
-    public ResponseEntity<?> alterar(@PathVariable("id") Long id, @RequestBody Produto usuario,
+    public ResponseEntity<?> alterar(@PathVariable("id") Long id, @RequestBody Produto produto,
                                      @RequestHeader("usuario") String login,
                                      @RequestHeader("senha") String senha) {
         try {
             usuarioService.loginAdministrador(login, senha);
-            usuario.setId(id);
-            return new ResponseEntity<>(produtoService.alterar(usuario), HttpStatus.ACCEPTED);
+            produto.setId(id);
+            return new ResponseEntity<>(produtoService.alterar(produto), HttpStatus.ACCEPTED);
         } catch (GenericException e) {
             return new ResponseEntity<>(e.toJson(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {

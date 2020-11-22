@@ -1,7 +1,7 @@
 package br.ufms.cpcx.trabalho1.dto;
 
-import br.ufms.cpcx.trabalho1.entity.Produto;
 import br.ufms.cpcx.trabalho1.enuns.ETipoPessoa;
+import br.ufms.cpcx.trabalho1.entity.Produto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

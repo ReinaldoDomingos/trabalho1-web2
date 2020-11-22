@@ -1,7 +1,7 @@
 package br.ufms.cpcx.trabalho1.controller;
 
-import br.ufms.cpcx.trabalho1.pojo.CompraPojo;
 import br.ufms.cpcx.trabalho1.service.CompraService;
+import br.ufms.cpcx.trabalho1.pojo.CompraPojo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
