@@ -24,42 +24,31 @@
     <main class="main gridItem">
         <nav class="navbar">
             <ul>
-                <li id="btnListaDeProdutos" v-bind:class="{'ativo':tab=='produtos'}" @click="mostrarTab('produtos')">
+                <li id="btnListaDeProdutos" v-bind:class="{'ativo':tab==='produtos'}" @click="mostrarTab('produtos')">
                     Lista de Produtos
-                </li>
-                <li id="btnListaDeCategorias" v-bind:class="{'ativo':tab=='categorias'}"
-                    @click="mostrarTab('categorias')">Lista de Categorias
                 </li>
             </ul>
         </nav>
         <div class="table-responsive">
-            <table id="produtos" class="table table-hover table-sm " v-show="tab=='produtos'">
+            <table id="produtos" class="table table-hover table-sm " v-show="tab==='produtos'">
                 <button id="btnAdd" class="btn add btn-success float-right" @click="adicionarItem()">
                     <i class="material-icons">add</i><span>Adicionar</span>
                 </button>
                 <thead>
                 <tr>
-                    <th>Id</th>
-                    <th colspan="2">Nome</th>
-                    <th colspan="2">Tipo</th>
-                    <th colspan="2">Custo</th>
-                    <th colspan="2">Valor</th>
-                    <th>Estoque</th>
-                    <th>Descrição</th>
-                    <th>Imagem</th>
+                    <th colspan="2">Descrição</th>
+                    <th colspan="2">Preço</th>
+                    <th colspan="2">Estoque</th>
+                    <th colspan="2">Idade Permitida</th>
                     <th>Ação</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr v-for="produto in orderBy(produtos,'id')">
-                    <th>{{produto.id}}</th>
-                    <td colspan="2">{{produto.nome}}</td>
-                    <td colspan="2">{{produto.categoria.nome}}</td>
-                    <td colspan=2">{{produto.custo|formatarReal}}</td>
-                    <td colspan="2">{{produto.valorDeVenda|formatarReal}}</td>
-                    <td>{{produto.quantidade}}</td>
-                    <td>{{produto.descricao}}</td>
-                    <td>{{produto.urlImg}}</td>
+                <tr v-for="produto in orderBy(produtos,'descricao')">
+                    <td colspan="2">{{ produto.descricao }}</td>
+                    <td colspan="2">{{ produto.preco |formatarReal }}</td>
+                    <td colspan="2">{{ produto.quantidadeEstoque }}</td>
+                    <td colspan="2">{{ produto.idadePermitida }}</td>
                     <td>
                         <i class="material-icons btn btn-primary" @click="editarItem(produto)">edit</i>
                         <i class="material-icons btn btn-danger" @click="deletarItem(produto.id)">delete</i>
@@ -67,32 +56,8 @@
                 </tr>
                 </tbody>
             </table>
-            <table id="categorias" class="table table-hover table-sm" v-show="tab=='categorias'">
-                <button id="btnAddCategoria" class="btn add btn-success float-right hide" @click="adicionarItem()">
-                    <i class="material-icons">add</i><span>Adicionar</span></button>
-                <thead>
-                <tr>
-                    <th>Id</th>
-                    <th colspan="2">Nome</th>
-                    <th>Tipo</th>
-                    <th colspan="3">Descrição</th>
-                    <th>Ação</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr v-for="categoria in orderBy(categorias,'id')">
-                    <th>{{categoria.id}}</th>
-                    <th colspan="2">{{categoria.nome}}</th>
-                    <th>{{categoria.tipoCategoria}}</th>
-                    <th colspan="3">{{categoria.descricao}}</th>
-                    <td>
-                        <i class="material-icons btn btn-primary" @click="editarItem(categoria)">edit</i>
-                        <i class="material-icons btn btn-danger" @click="deletarItem(categoria.id)">delete</i>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-            <p id="msg-list-empty" class="text-center" v-show="produtos.length==0">Não há produtos cadastrados</p>
+
+            <p id="msg-list-empty" class="text-center" v-show="produtos.length===0">Não há produtos cadastrados</p>
         </div>
         <div id="loading" class="row hide">
             <div class="spinner-border text-dark" role="status"></div>
@@ -103,7 +68,7 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title-add">{{modalTitle}}</h5>
+                            <h5 class="modal-title-add">{{ modalTitle }}</h5>
                             <button id="btnExitModal" type="button" class="close" data-dismiss="modal"
                                     aria-label="Close" modal="modalProduto">
                                 <span aria-hidden="true">&times;</span>
@@ -111,7 +76,7 @@
                         </div>
                         <div class="modal-body">
                             <form id="formProduto" action="#" method="post"
-                                  v-show="tab=='produtos'">
+                                  v-show="tab==='produtos'">
                                 <div class="modal-img">
                                     <img id="imgProduto" src=""/>
                                 </div>
@@ -121,46 +86,39 @@
                                            v-model="itemEditando.id" disabled>
                                 </div>
                                 <div class="form-group">
-                                    <label for="produto-nome" class="col-form-label">Nome:</label>
+                                    <label for="produto-nome" class="col-form-label">Descrição:</label>
                                     <input type="text" class="form-control" id="produto-nome" min="5" max="255"
-                                           v-model="itemEditando.nome">
+                                           v-model="itemEditando.descricao">
                                 </div>
                                 <div class="form-group">
-                                    <label for="produto-categoria" class="col-form-label">Categoria:</label>
-                                    <select class="form-control" id="produto-categoria"
-                                            v-model="itemEditando.categoria.id">
-                                        <option v-for="categoria in categorias" v-bind:value="categoria.id">
-                                            {{categoria.nome}}
-                                        </option>
-                                    </select>
+                                    <label for="produto-preco-compra" class="col-form-label">Preço compra</label>
+                                    <input type="number" class="form-control" id="produto-preco-compra"
+                                           v-model="itemEditando.precoCompra">
                                 </div>
                                 <div class="form-group">
-                                    <label for="produto-custo" class="col-form-label">Custo:</label>
-                                    <input type="number" class="form-control" id="produto-custo"
-                                           v-model="itemEditando.custo">
+                                    <label for="produto-preco-venda-fisica" class="col-form-label">Preço Venda (Pessoa
+                                        Fisica):</label>
+                                    <input type="number" class="form-control" id="produto-preco-venda-fisica"
+                                           v-model="itemEditando.precoVendaFisica">
                                 </div>
                                 <div class="form-group">
-                                    <label for="produto-valor" class="col-form-label">Valor:</label>
-                                    <input type="number" class="form-control" id="produto-valor"
-                                           v-model="itemEditando.valorDeVenda">
+                                    <label for="produto-preco-venda-juridica" class="col-form-label">Preço venda (Pessoa
+                                        Jurídica):</label>
+                                    <input type="number" class="form-control" id="produto-preco-venda-juridica"
+                                           v-model="itemEditando.precoVendaJuridica">
                                 </div>
                                 <div class="form-group">
                                     <label for="produto-qtd" class="col-form-label">Quantidade:</label>
                                     <input type="number" class="form-control" id="produto-qtd"
-                                           v-model="itemEditando.quantidade">
+                                           v-model="itemEditando.quantidadeEstoque">
                                 </div>
                                 <div class="form-group">
-                                    <label for="produto-descricao" class="col-form-label">Descrição:</label>
-                                    <textarea class="form-control" id="produto-descricao"
-                                              v-model="itemEditando.descricao"></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label for="produto-img" class="col-form-label">URL Imagem:</label>
-                                    <input type="text" class="form-control" id="produto-img"
-                                           v-model="itemEditando.urlImg">
+                                    <label for="produto-qtd" class="col-form-label">Idade Minima:</label>
+                                    <input type="number" class="form-control" id="produto-idade-permitida"
+                                           v-model="itemEditando.idadePermitida">
                                 </div>
                             </form>
-                            <form id="formCategoria" action="#" method="post" v-show="tab=='categorias'">
+                            <form id="formCategoria" action="#" method="post" v-show="tab==='categorias'">
                                 <div class="form-group" id="idCategoria" v-show="itemEditando.id">
                                     <label for="categoria-id" class="col-form-label">Id:</label>
                                     <input type="number" class="form-control" id="categoria-id"

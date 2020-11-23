@@ -1,31 +1,56 @@
-let inseriu_mock = false;
-var API_URL = "http://localhost:8081/", categorias = [], produtos = [];
-let categorias_mock = ["CDs, DVDs e Blu-ray"]
+var API_URL = "http://localhost:8081/api/", produtos = [];
 
-async function getItens(tipo) {
-    console.log(tipo)
-    return await axios.get(API_URL + "albus/" + tipo)
+function criarConfig(url, metodo, data) {
+    let requisicao = {
+        method: metodo ? metodo : 'get',
+        url: url,
+        crossDomain: true,
+        headers: {
+            'usuario': 'reinaldo',
+            'senha': '123'
+        }
+    };
+
+    if (data) {
+        requisicao.data = data;
+    }
+    return requisicao;
 }
 
-async function getItem(tipo, id,) {
-    console.log(tipo)
-    return await axios.get(API_URL + "albus/" + tipo + "/" + id)
+async function getItens(tipo) {
+    let url = API_URL + tipo;
+    var config = criarConfig(url);
+
+    return await axios(config)
+}
+
+async function getItem(tipo, id) {
+    let url = API_URL + tipo + "/" + id;
+    let config = criarConfig(url, 'get');
+
+    return await axios(config);
 }
 
 async function postItem(tipo, item) {
-    console.log(tipo)
     if (!tipo || !item) return;
-    return await axios.post(API_URL + "albus/" + tipo, item)
+    let url = API_URL + tipo;
+    var config = criarConfig(url, 'post', item);
+
+    return await axios(config)
 }
 
 async function deletar(tipo, id) {
-    console.log(tipo)
-    return axios.delete(API_URL + "albus/" + tipo + "/" + id);
+    let url = API_URL + tipo + "/" + id;
+    var config = criarConfig(url, 'delete');
+
+    return axios(config);
 }
 
 async function updateItem(tipo, item) {
-    console.log(tipo)
-    return axios.put(API_URL + "albus/" + tipo + "/" + item.id, item);
+    let url = API_URL + tipo + "/" + item.id;
+    var config = criarConfig(url, 'put', item);
+
+    return await axios(config);
 }
 
 let qtd_mocks_para_processar = 20;
@@ -36,7 +61,6 @@ async function setProdutos() {
         let produto = {
             "nome": "Cavaleiros Do Zodíaco - Box Blu-ray Alma De Ouro",
             "urlImg": "https://picsum.photos/200/300?grayscale",
-            "categoria": {"id": 1},
             "descricao": "teste"
         }
         produto.quantidade = ((Math.random() * 50 + 20) * 1.075).toPrecision(2)
@@ -53,11 +77,4 @@ async function setProdutos() {
     await Promise.all(promises);
     $("#msg-list-empty").addClass("hide")
     return {};
-}
-
-async function setCategorias() {
-    return await postItem("categoria", {
-        "nome": categorias_mock[0],
-        "tipoCategoria": "PRODUTO"
-    })
 }
