@@ -1,8 +1,8 @@
 package br.ufms.cpcx.trabalho1.controller;
 
+import br.ufms.cpcx.trabalho1.entity.Usuario;
 import br.ufms.cpcx.trabalho1.exception.GenericException;
 import br.ufms.cpcx.trabalho1.service.UsuarioService;
-import br.ufms.cpcx.trabalho1.entity.Usuario;
 import br.ufms.cpcx.trabalho1.utils.ConstantesErros;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +27,20 @@ public class UsuarioController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @GetMapping("/login")
+    @ResponseBody
+    public ResponseEntity<?> login(@RequestHeader("usuario") String usuario, @RequestHeader("senha") String senha) {
+        try {
+            Usuario user = usuarioService.login(usuario, senha);
+            return new ResponseEntity<>(user, HttpStatus.OK);
+        } catch (GenericException e) {
+            return new ResponseEntity<>(e.toJson(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            LOGGER.error(ConstantesErros.Usuario.DADOS_INCORRETOS_EXECEPTION, e);
+            throw new GenericException(ConstantesErros.Usuario.DADOS_INCORRETOS_EXECEPTION, e);
+        }
+    }
 
     @GetMapping
     @ResponseBody

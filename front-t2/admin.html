@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="css/modal.css">
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/login.css">
 </head>
 <body>
 <div id="app" class="gridContainer">
@@ -22,14 +23,39 @@
     </header>
     <!--    <span id="overshadowed"></span>-->
     <main class="main gridItem">
-        <nav class="navbar">
+        <nav v-show="isLogado" class="navbar">
             <ul>
                 <li id="btnListaDeProdutos" v-bind:class="{'ativo':tab==='produtos'}" @click="mostrarTab('produtos')">
                     Lista de Produtos
                 </li>
             </ul>
+
+            <div class="row">
+                <div class="form-group">
+                    <label for="select-filtos" class="col-form-label float-left">Filtrar por:</label>
+                    <select id="select-filtos" v-model="filtroSelecionado" class="custom-select">
+                        <option value="">Selecione</option>
+                        <option v-for="filtro in filtros" v-bind:value="filtro.valor">{{ filtro.nome }}</option>
+                    </select>
+                </div>
+                <div v-show="filtroSelecionado" class="form-group pl-2">
+                    <label v-show="filtroSelecionado==='preco'" for="produto-id" class="col-form-label  float-left">Preço
+                        Minimo:</label>
+                    <label v-show="filtroSelecionado==='idade'" for="produto-id" class="col-form-label  float-left">Idade:</label>
+                    <input v-model="filtro1" type="number" class="form-control">
+                </div>
+                <div v-show="filtroSelecionado==='preco'" class="form-group pl-2">
+                    <label for="produto-id" class="col-form-label  float-left">Preço
+                        Máximo:</label>
+                    <input v-model="filtro2" type="number" class="form-control">
+                </div>
+
+                <div class="form-group pl-2" style="display: inline-grid;">
+                    <div class="btn btn-dark" style="place-self: end;">Filtrar</div>
+                </div>
+            </div>
         </nav>
-        <div class="table-responsive">
+        <div v-show="isLogado" class="table-responsive">
             <table id="produtos" class="table table-hover table-sm " v-show="tab==='produtos'">
                 <button id="btnAdd" class="btn add btn-success float-right" @click="adicionarItem()">
                     <i class="material-icons">add</i><span>Adicionar</span>
@@ -59,6 +85,22 @@
 
             <p id="msg-list-empty" class="text-center" v-show="produtos.length===0">Não há produtos cadastrados</p>
         </div>
+
+        <div v-show="!isLogado" id="tela-login" class="wrapper fadeInDown">
+            <div id="formContent">
+                <div class="fadeIn first">
+                    <h2 class="text-danger">{{ msgErroLogin }}</h2><br>
+                    <h2>Login</h2></div>
+
+                <!-- Login Form -->
+                <form id="form-login">
+                    <input type="text" id="login" class="fadeIn second" name="login" placeholder="Usuário">
+                    <input type="password" id="password" class="fadeIn third" name="login" placeholder="Senha">
+                    <input type="button" class="fadeIn fourth" value="Entrar" @click="login()">
+                </form>
+            </div>
+        </div>
+
         <div id="loading" class="row hide">
             <div class="spinner-border text-dark" role="status"></div>
         </div>
@@ -168,6 +210,7 @@
 <script src="node_modules/vue2-filters/dist/vue2-filters.min.js"></script>
 <script src="node_modules/axios/dist/axios.js"></script>
 <script src="js/index.js"></script>
+<script src="js/login.js"></script>
 <script src="js/crud.js"></script>
 <script src="js/admin.js"></script>
 </body>

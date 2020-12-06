@@ -1,6 +1,6 @@
 function estaPreeenchidoCamposObrigatorios(item) {
     let camposObrigatorios = ['descricao', 'quantidadeEstoque', 'precoVendaFisica',
-        'precoCompra', 'precoVendaJuridica', 'idadePermitida'];
+        'precoCompra', 'precoVendaJuridica'];
 
     for (let i = 0; i < camposObrigatorios.length; i++) {
         let atributo = camposObrigatorios[i];
@@ -32,17 +32,55 @@ new Vue({
         title: "Easy buy",
         tab: "produtos",
         produtos: [],
-        modalTitle: ""
+        modalTitle: "",
+        isLogado: false,
+        msgErroLogin: '',
+        filtros: [
+            {nome: 'Idade Minima', valor: 'idade'},
+            {nome: 'Preço', valor: 'preco'}
+        ],
+        filtroSelecionado: ''
     },
     mixins: [Vue2Filters.mixin],
     created() {
-        this.carregarDados()
+        this.autenticarAutomatico();
         $(document).scroll(this.changeNavColor)
     },
     mounted() {
-
     },
     methods: {
+        autenticarAutomatico() {
+            let usuario = sessionStorage.usuario;
+            let senha = sessionStorage.senha;
+
+            if (usuario && senha) {
+                this.login(usuario, senha);
+            }
+        },
+        login(login, senha) {
+            let self = this;
+
+            if (!login || !senha) {
+                login = $('#login').val();
+                senha = $('#password').val();
+            }
+
+            logar(login, senha).then((response) => {
+                let usuario = response.data;
+                if (usuario.isAdministrador) {
+                    self.isLogado = true;
+                    sessionStorage.usuario = usuario.login;
+                    sessionStorage.senha = usuario.senha;
+                    self.msgErroLogin = '';
+                    self.carregarDados()
+                } else {
+                    self.msgErroLogin = 'Usuário sem permissão!';
+                }
+            }).catch(() => {
+                self.isLogado = false;
+                self.msgErroLogin = 'Login e/ou senha incorretos!';
+            })
+        },
         changeNavColor() {
             var st1 = document.documentElement.scrollTop;
             var st2 = document.body.scrollTop;
@@ -61,14 +99,12 @@ new Vue({
                 this.navtoggle()
         },
         carregarProdutos() {
-            console.log("getProdutos")
             getItens("produto")
                 .then(response => {
                     if (response.status === 200)
                         if (response.data.length > 0) {
                             this.produtos = response.data;
                         } else {
-                            console.log("setProdutos")
                             setProdutos()
                                 .then(() => {
                                     this.carregarProdutos()
@@ -119,7 +155,6 @@ new Vue({
                     }
                 })
             } else {
-                console.log(item)
                 this.itemEditando = {
                     id: item.id,
                     nome: item.nome,
@@ -133,7 +168,7 @@ new Vue({
         },
         salvarItem() {
             if (this.tab === "produtos") {
-                if (!estaPreeenchidoCamposObrigatorios(this.itemEditando)) {
+                if (!estaPreeenchidoCamposObrigatorios(this.itemEditando) || this.itemEditando === undefined || this.itemEditando === false) {
                     alert("Preencha todos os campos obrigatórios (*)!")
                     return
                 }
@@ -167,7 +202,6 @@ new Vue({
             }
         },
         deletarItem(id) {
-            console.log(id)
             if (!id) return;
             if (this.tab === "produtos") {
                 deletar("produto", id)

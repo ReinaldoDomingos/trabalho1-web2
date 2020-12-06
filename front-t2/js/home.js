@@ -9,13 +9,46 @@ new Vue({
         title: "Easy buy",
         produtos: [],
         filtro: "",
+        isLogado: false,
+        msgErroLogin: ''
     },
     mixins: [Vue2Filters.mixin],
     created() {
-        this.carregarDados()
+        this.autenticarAutomatico();
         $(document).scroll(this.changeNavColor)
     },
     methods: {
+        autenticarAutomatico() {
+            let usuario = sessionStorage.usuario;
+            let senha = sessionStorage.senha;
+
+            if (usuario && senha) {
+                this.login(usuario, senha);
+            }
+        },
+        login(login, senha) {
+            let self = this;
+
+            if (!login || !senha) {
+                login = $('#login').val();
+                senha = $('#password').val();
+            }
+
+            logar(login, senha).then((response) => {
+                console.log(1)
+                let usuario = response.data;
+                sessionStorage.usuario = usuario.login;
+                sessionStorage.senha = usuario.senha;
+                self.isLogado = true;
+                self.msgErroLogin = '';
+                self.carregarDados()
+            }).catch((error) => {
+                console.log(2)
+                console.log(error)
+                self.isLogado = false;
+                self.msgErroLogin = 'Login e/ou senha incorretos!';
+            })
+        },
         changeNavColor() {
             var st1 = document.documentElement.scrollTop;
             var st2 = document.body.scrollTop;

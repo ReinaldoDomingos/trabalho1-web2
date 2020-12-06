@@ -1,15 +1,25 @@
 var API_URL = "http://localhost:8081/api/", produtos = [];
 
-function criarConfig(url, metodo, data) {
+function criarConfig(url, metodo, data, filtros) {
+    let usuario = sessionStorage.usuario;
+    let senha = sessionStorage.senha;
+
     let requisicao = {
         method: metodo ? metodo : 'get',
         url: url,
         crossDomain: true,
         headers: {
-            'usuario': 'reinaldo',
-            'senha': '123'
+            'usuario': usuario,
+            'senha': senha
         }
     };
+
+    if (filtros && filtros.length) {
+        requisicao.url += '?';
+        filtros.forEach((filtro) => {
+            requisicao.url += filtro.nome + filtro.valor;
+        });
+    }
 
     if (data) {
         requisicao.data = data;
