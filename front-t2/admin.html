@@ -22,14 +22,20 @@
         <span>Painel de Controle</span>
     </header>
     <!--    <span id="overshadowed"></span>-->
+
     <main class="main gridItem">
+        <!--        Tabs     -->
         <nav v-show="isLogado" class="navbar">
             <ul>
                 <li id="btnListaDeProdutos" v-bind:class="{'ativo':tab==='produtos'}" @click="mostrarTab('produtos')">
-                    Lista de Produtos
+                    Produtos
+                </li>
+                <li id="btnListaDePessoas" v-bind:class="{'ativo':tab==='produtos'}" @click="mostrarTab('produtos')">
+                    Pessoas
                 </li>
             </ul>
 
+            <!--        Filtros     -->
             <div class="row">
                 <div class="form-group">
                     <label for="select-filtos" class="col-form-label float-left">Filtrar por:</label>
@@ -56,7 +62,11 @@
                     <button class="btn btn-dark" style="place-self: end;" @click="filtrar()">Filtrar</button>
                 </div>
             </div>
+            <!--        Filtros     -->
         </nav>
+        <!--        Tabs     -->
+
+        <!--        Grid     -->
         <div v-show="isLogado" class="table-responsive">
             <table id="produtos" class="table table-hover table-sm " v-show="tab==='produtos'">
                 <button id="btnAdd" class="btn add btn-success float-right" @click="adicionarItem()">
@@ -87,14 +97,15 @@
 
             <p id="msg-list-empty" class="text-center" v-show="produtos.length===0">Não há produtos cadastrados</p>
         </div>
+        <!--        Grid     -->
 
+        <!--        Tela de Login    -->
         <div v-show="!isLogado" id="tela-login" class="wrapper fadeInDown">
             <div id="formContent">
                 <div class="fadeIn first">
                     <h2 class="text-danger">{{ msgErroLogin }}</h2><br>
                     <h2>Login</h2></div>
 
-                <!-- Login Form -->
                 <form id="form-login">
                     <input type="text" id="login" class="fadeIn second" name="login" placeholder="Usuário">
                     <input type="password" id="password" class="fadeIn third" name="login" placeholder="Senha">
@@ -102,10 +113,17 @@
                 </form>
             </div>
         </div>
+        <!--        Tela de Login    -->
 
+        <!--        Loading    -->
         <div id="loading" class="row hide">
             <div class="spinner-border text-dark" role="status"></div>
         </div>
+        <!--        Loading    -->
+
+        <!--        Loading    -->
+
+        <!--        Modal de Edição e Novo    -->
         <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal fade" id="modalProduto" tabindex="-1" role="dialog" aria-labelledby="modalProdutoLabel"
                  aria-hidden="true">
@@ -203,6 +221,7 @@
             </div>
         </div>
         <div id="modal-backdrop" class="modal-backdrop fade" modal="modalProduto"></div>
+        <!--        Modal de Edição e Novo    -->
     </main>
     <footer class="footer gridItem">
         <p>Easy buy 2020 &copy; Todos os direitos reservados</p>
