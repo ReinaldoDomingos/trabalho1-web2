@@ -38,8 +38,8 @@
             <!--        Filtros     -->
             <div v-show="tab==='produtos'" class="row">
                 <div class="form-group">
-                    <label for="select-filtos" class="col-form-label float-left">Filtrar por:</label>
-                    <select id="select-filtos" v-model="filtroSelecionado" class="custom-select"
+                    <label class="col-form-label float-left">Filtrar por:</label>
+                    <select v-model="filtroSelecionado" class="custom-select"
                             @change="limparSelect()">
                         <option value="">Selecione</option>
                         <option v-for="filtro in filtrosProdutos" v-bind:value="filtro.valor">{{ filtro.nome }}</option>
@@ -71,8 +71,8 @@
 
             <div v-show="tab==='pessoas'" class="row">
                 <div class="form-group">
-                    <label for="select-filtos" class="col-form-label float-left">Filtrar por:</label>
-                    <select id="select-filtos" v-model="filtroSelecionado" class="custom-select"
+                    <label class="col-form-label float-left">Filtrar por:</label>
+                    <select v-model="filtroSelecionado" class="custom-select"
                             @change="limparSelect()">
                         <option value="">Selecione</option>
                         <option v-for="filtro in filtrosPessoas" v-bind:value="filtro.valor">{{ filtro.nome }}</option>
@@ -153,8 +153,11 @@
 
                 <tbody>
                 <tr v-for="pessoa in orderBy(pessoas,'nome')">
-                    <td colspan="2">{{ pessoa.tipo }}</td>
-                    <td colspan="2">{{ pessoa.tipo === 'FISICA' ? pessoa.cpf : pessoa.cnpj }}</td>
+                    <td colspan="2">{{ pessoa.tipo | formatarEnum }}</td>
+                    <td colspan="2">{{
+                            pessoa.tipo === 'FISICA' ? pessoa.cpf : pessoa.cnpj
+                        }}
+                    </td>
                     <td colspan="2">{{ pessoa.nome }}</td>
                     <td colspan="2">{{ pessoa.responsavelNome }}</td>
                     <td colspan="2">{{ pessoa.situacao | formatarEnum }}</td>
@@ -211,8 +214,8 @@
                             </button>
                         </div>
                         <div class="modal-body">
-                            <form id="formProduto" action="#" method="post"
-                                  v-show="tab==='produtos'">
+                            <!--         Formulário de produtos           -->
+                            <form id="formProduto" action="#" method="post" v-show="tab==='produtos'">
                                 <div class="modal-img">
                                     <img id="imgProduto" src=""/>
                                 </div>
@@ -254,38 +257,89 @@
                                            v-model="itemEditando.idadePermitida">
                                 </div>
                             </form>
-                            <form id="formCategoria" action="#" method="post" v-show="tab==='categorias'">
-                                <div class="form-group" id="idCategoria" v-show="itemEditando.id">
-                                    <label for="categoria-id" class="col-form-label">Id:</label>
-                                    <input type="number" class="form-control" id="categoria-id"
+                            <!--         Formulário de produtos           -->
+
+                            <!--         Formulário de produtos           -->
+                            <form id="formPessoas" action="#" method="post" v-show="tab==='pessoas'">
+                                <div v-show="itemEditando.id" class="form-group">
+                                    <label for="pessoa-id" class="col-form-label">Id:</label>
+                                    <input type="number" class="form-control" id="pessoa-id"
                                            v-model="itemEditando.id" disabled>
                                 </div>
+
                                 <div class="form-group">
-                                    <label for="categoria-nome" class="col-form-label">Nome:</label>
-                                    <input type="text" class="form-control" id="categoria-nome" min="5" max="255"
-                                           v-model="itemEditando.nome">
-                                </div>
-                                <div class="form-group">
-                                    <label for="categoria-tipo" class="col-form-label">Categoria:</label>
-                                    <select class="form-control" id="categoria-tipo"
-                                            v-model="itemEditando.tipoCategoria">
-                                        <option>PRODUTO</option>
-                                        <option>SERVICO</option>
+                                    <label for="pessoa-tipo" class="col-form-label">Tipo:</label>
+                                    <select class="form-control" id="pessoa-tipo" v-model="itemEditando.tipo"
+                                            :disabled="itemEditando.id !== ''">
+                                        <option value="FISICA">Fisíca</option>
+                                        <option value="JURIDICA">Juridica</option>
                                     </select>
                                 </div>
+
                                 <div class="form-group">
-                                    <label for="categoria-descricao" class="col-form-label">Descrição:</label>
-                                    <textarea class="form-control" id="categoria-descricao"
-                                              v-model="itemEditando.descricao"></textarea>
+                                    <label for="pessoa-situacao" class="col-form-label">Situação:</label>
+                                    <select class="form-control" id="pessoa-situacao" v-model="itemEditando.situacao">
+                                        <option value="ATIVO">Ativo</option>
+                                        <option value="INATIVO">Inativo</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="pessoa-tipo" class="col-form-label">Responsavel:</label>
+                                    <select class="form-control" id="pessoa-responsavel"
+                                            v-model="itemEditando.responsavelId">
+                                        <option v-show="pessoa.id!==itemEditando.id" v-for="pessoa in pessoas"
+                                                v-bind:value="pessoa.id">{{ pessoa.nome }}
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="pessoa-nome" class="col-form-label">Nome:</label>
+                                    <input type="text" class="form-control" id="pessoa-nome"
+                                           v-model="itemEditando.nome">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="pessoa-apelido" class="col-form-label">Apelido:</label>
+                                    <input type="text" class="form-control" id="pessoa-apelido"
+                                           v-model="itemEditando.apelido">
+                                </div>
+
+                                <div v-show="itemEditando.tipo==='FISICA'" class="form-group">
+                                    <label for="pessoa-rg" class="col-form-label">RG:</label>
+                                    <input type="number" class="form-control" id="pessoa-rg"
+                                           v-model="itemEditando.rg">
+                                </div>
+
+                                <div v-show="itemEditando.tipo==='FISICA'" class="form-group">
+                                    <label for="pessoa-cpf" class="col-form-label">CPF:</label>
+                                    <input type="text" class="form-control" id="pessoa-cpf"
+                                           v-model="itemEditando.cpf" v-mask="'###.###.###-##'">
+                                </div>
+
+                                <div v-show="itemEditando.tipo==='JURIDICA'" class="form-group">
+                                    <label for="pessoa-cnpj" class="col-form-label">CNPJ:</label>
+                                    <input type="text" class="form-control" id="pessoa-cnpj"
+                                           v-model="itemEditando.cnpj" v-mask="'##.###.###/####-##'">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="pessoa-data-nascimento" class="col-form-label">
+                                        Data de Nascimento:
+                                    </label>
+                                    <input type="date" class="form-control" id="pessoa-data-nascimento"
+                                           v-model="itemEditando.dataNascimento">
                                 </div>
                             </form>
+                            <!--         Formulário de produtos           -->
                         </div>
                         <div class="modal-footer">
                             <button id="btnCloseModal" type="button" class="btn btn-secondary" data-dismiss="modal"
                                     modal="modalProduto">
                                 Close
                             </button>
-                            <button id="btnSalvar" type="submit" class="btn btn-primary" @click="salvarItem">Salvar
+                            <button id="btnSalvar" type="submit" class="btn btn-primary" @click="salvarItem()">Salvar
                             </button>
                             <!--                            <button id="btnSalvarCategoria" type="submit" class="btn hide btn-primary">Salvar-->
                             <!--                            </button>-->
@@ -303,6 +357,7 @@
 </div>
 <script src="node_modules/vue/dist/vue.js"></script>
 <script src="node_modules/vue2-filters/dist/vue2-filters.min.js"></script>
+<script src="node_modules/vue-the-mask/dist/vue-the-mask.js"></script>
 <script src="node_modules/axios/dist/axios.js"></script>
 <script src="js/index.js"></script>
 <script src="js/login.js"></script>

@@ -79,6 +79,10 @@ public class PessoaService {
         throw new DadosIncorretosException(ConstantesErros.Generic.DADOS_INCORRETOS_EXECEPTION, null);
     }
 
+    public Optional<Pessoa> buscarPorIdPessoa(Long id) {
+        return pessoaRepository.findById(id);
+    }
+
     public Optional<PessoaFisica> buscarPorIdPessoaFisica(Long id) {
         return pessoaFisicaRepository.findById(id);
     }

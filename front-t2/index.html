@@ -22,7 +22,7 @@
         <span id="btnMenu" v-bind:class="{'hide': navLateralAberta=='false'}" @click="navtoggle()"><i
                 class="material-icons">menu</i></span><span>{{ title }}</span>
     </header>
-    <nav class="nav top gridItem naoSelecionavel" v-show="navLateralAberta || width!='mobile'">
+    <nav class="nav top gridItem naoSelecionavel" v-show="navLateralAberta || width!=='mobile'">
         <ul>
             <li class="nav-header">
                 <i class="material-icons">account_circle</i>
@@ -30,18 +30,18 @@
                 <p class="user-email">{{ user.email }}</p>
             </li>
             <hr>
-            <li class="item" v-bind:class="{'ativo': itemMenuSelecionado=='inicio'}" @click="selectNavItem('inicio')">
+            <li class="item" v-bind:class="{'ativo': itemMenuSelecionado==='inicio'}" @click="selectNavItem('inicio')">
                 <i class="material-icons">home</i><span>Inicio</span>
             </li>
-            <li class="item" v-bind:class="{'ativo': itemMenuSelecionado=='carrinho'}"
+            <li class="item" v-bind:class="{'ativo': itemMenuSelecionado==='carrinho'}"
                 id="btnCarrinho" @click="selectNavItem('carrinho')"><i
                     class="material-icons">local_grocery_store</i><span>Carrinho</span>
             </li>
-            <li class="item" v-bind:class="{'ativo': itemMenuSelecionado=='pedidos'}"
+            <li class="item" v-bind:class="{'ativo': itemMenuSelecionado==='pedidos'}"
                 @click="selectNavItem('pedidos')"><i class="material-icons">local_mall</i>
                 <span>Meus pedidos</span>
             </li>
-            <li class="item" v-bind:class="{'ativo': itemMenuSelecionado=='favoritos'}"
+            <li class="item" v-bind:class="{'ativo': itemMenuSelecionado==='favoritos'}"
                 @click="selectNavItem('favoritos')">
                 <i class="material-icons">favorite</i>
                 <span>Meus favoritos</span>
@@ -53,7 +53,7 @@
         <div id="produtos" v-show="isLogado">
             <div class="oferta p-lg-2 mb-2" v-for="produto in orderBy(produtos, 'descricao')">
                 <div class="body">
-                    <img v-bind:src="produto.urlImg">
+                    <img v-bind:src="produto.urlImg" v-bind:alt="produto.descricao">
                     <p class="d-lg-block">{{ produto.descricao }}</p>
                     <h1 class="d-sm-block m-0 my-lg-1">{{ produto.preco|formatarReal }}</h1>
                     <span class="d-block">{{ produto.quantidadeEstoque }} restantes</span>
@@ -89,6 +89,7 @@
 </div>
 
 <script src="node_modules/vue/dist/vue.js"></script>
+<script src="node_modules/axios/dist/axios.js"></script>
 <script src="node_modules/vue2-filters/dist/vue2-filters.min.js"></script>
 <script src="node_modules/axios/dist/axios.js"></script>
 <script src="js/index.js"></script>

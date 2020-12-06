@@ -1,5 +1,6 @@
 package br.ufms.cpcx.trabalho1.controller;
 
+import br.ufms.cpcx.trabalho1.entity.Pessoa;
 import br.ufms.cpcx.trabalho1.exception.GenericException;
 import br.ufms.cpcx.trabalho1.service.PessoaService;
 import br.ufms.cpcx.trabalho1.service.UsuarioService;
@@ -81,6 +82,28 @@ public class PessoaController {
     public ResponseEntity<?> buscarTodosPessoaJuridica(@RequestHeader("usuario") String usuario,
                                                        @RequestHeader("senha") String senha) {
         return buscarTodos(usuario, senha, ETipoPessoa.JURIDICA);
+    }
+
+    @ResponseBody
+    @GetMapping("/{id}")
+    public ResponseEntity<?> buscarPorIdPessoa(@PathVariable("id") Long id,
+                                                     @RequestHeader("usuario") String usuario,
+                                                     @RequestHeader("senha") String senha) {
+        try {
+            Optional<Pessoa> optional = pessoaService.buscarPorIdPessoa(id);
+
+            if (optional.isPresent()) {
+                usuarioService.login(usuario, senha);
+                return new ResponseEntity<>(optional.get(), HttpStatus.OK);
+            } else {
+                return ResponseEntity.noContent().build();
+            }
+        } catch (GenericException e) {
+            return new ResponseEntity<>(e.toJson(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            LOGGER.error(ConstantesErros.Generic.BUSCAR_EXECEPTION, e);
+            throw new GenericException(ConstantesErros.Generic.BUSCAR_EXECEPTION, e);
+        }
     }
 
     @ResponseBody

@@ -1,17 +1,3 @@
-function estaPreeenchidoCamposObrigatorios(item) {
-    let camposObrigatorios = ['descricao', 'quantidadeEstoque', 'precoVendaFisica',
-        'precoCompra', 'precoVendaJuridica'];
-
-    for (let i = 0; i < camposObrigatorios.length; i++) {
-        let atributo = camposObrigatorios[i];
-        if (!item[atributo]) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
 new Vue({
     el: "#app",
     data: {
@@ -185,32 +171,20 @@ new Vue({
             })
         },
         carregarDados() {
-            this.carregarProdutos()
+            if (this.tab === 'produtos') {
+                this.carregarProdutos();
+            } else if (this.tab === 'pessoas') {
+                this.carregarPessoas();
+            }
         },
         adicionarItem() {
             this.toggleModal()
             if (this.tab === "produtos") {
                 this.editando = ""
                 this.modalTitle = "Novo Produto"
-                this.itemEditando = {
-                    id: "",
-                    nome: "",
-                    custo: "",
-                    valorDeVenda: "",
-                    quantidade: "",
-                    descricao: "",
-                    urlImg: ""
-                }
+                this.itemEditando = {id: ''}
             } else {
-                this.itemEditando = {
-                    id: "",
-                    nome: "",
-                    custo: "",
-                    valorDeVenda: "",
-                    quantidade: "",
-                    descricao: "",
-                    urlImg: ""
-                }
+                this.itemEditando = {id: ''}
             }
         },
         editarItem(item) {
@@ -222,60 +196,69 @@ new Vue({
                     if (response.status === 200) {
                         this.itemEditando = response.data;
                     }
-                })
+                });
             } else {
-                this.itemEditando = {
-                    id: item.id,
-                    nome: item.nome,
-                    custo: "",
-                    valorDeVenda: "",
-                    quantidade: "",
-                    descricao: item.descricao,
-                    urlImg: ""
-                }
+                this.modalTitle = "Editar Pessoa"
+
+                getItem('pessoa', item.id).then(response => {
+                    if (response.status === 200) {
+                        this.itemEditando = response.data;
+                        this.itemEditando.dataNascimento = formatarData(this.itemEditando.dataNascimento);
+                    }
+                });
             }
         },
         salvarItem() {
+            let item = JSON.parse(JSON.stringify(this.itemEditando));
+            let camposObrigatorios = [];
+            let tipo = this.tab.substring(0, this.tab.length - 1);
             if (this.tab === "produtos") {
-                if (!estaPreeenchidoCamposObrigatorios(this.itemEditando) || this.itemEditando === undefined || this.itemEditando === false) {
-                    alert("Preencha todos os campos obrigatórios (*)!")
-                    return
+                camposObrigatorios = ['descricao', 'quantidadeEstoque', 'precoVendaFisica',
+                    'precoCompra', 'precoVendaJuridica'];
+            } else if (this.tab === "pessoas" && item.tipo) {
+                camposObrigatorios = ['nome', 'dataNascimento'];
+                tipo += '/' + item.tipo.toLowerCase();
+
+                if (item.tipo === 'FISICA') {
+                    camposObrigatorios.push('rg')
+                    camposObrigatorios.push('cpf')
+                } else if (item.tipo === 'JURIDICA') {
+                    camposObrigatorios.push('cnpj')
                 }
-                let item = this.itemEditando;
-                if (!item.id)
-                    postItem("produto", item)
-                        .then(this.carregarProdutos)
-                        .then(this.toggleModal)
-                        .then(this.itemEditando = {
-                            id: "",
-                            nome: "",
-                            custo: "",
-                            valorDeVenda: "",
-                            quantidade: "",
-                            descricao: "",
-                            urlImg: ""
-                        })
-                else
-                    updateItem("produto", item)
-                        .then(this.carregarProdutos)
-                        .then(this.toggleModal)
-                        .then(this.itemEditando = {
-                            id: "",
-                            nome: "",
-                            custo: "",
-                            valorDeVenda: "",
-                            quantidade: "",
-                            descricao: "",
-                            urlImg: ""
-                        })
+
+                if (item.cpf) {
+                    item.cpf = item.cpf.replace(/\/|\.|\-/gi, '');
+                }
+                if (item.cnpj) {
+                    item.cnpj = item.cnpj.replace(/\/|\.|\-/gi, '');
+                }
+            }
+
+
+            if (!item || !estaPreeenchidoCamposObrigatorios(item, camposObrigatorios) || tipo === 'pessoa') {
+                alert("Preencha todos os campos obrigatórios (*)!")
+                return;
+            }
+
+            if (!item.id) {
+                delete item.id;
+                postItem(tipo, item)
+                    .then(this.carregarDados)
+                    .then(this.toggleModal)
+                    .then(() => this.itemEditando = {})
+                    .catch(() => alert('Erro ao salvar o registro, verifique os dados e tente novamente!'));
+            } else {
+                updateItem(tipo, item)
+                    .then(this.carregarDados)
+                    .then(this.toggleModal)
+                    .then(() => this.itemEditando = {})
+                    .catch(() => alert('Erro ao salvar o registro, verifique os dados e tente novamente!'));
             }
         },
         deletarItem(id) {
             if (!id) return;
-            if (this.tab === "produtos") {
-                deletar("produto", id)
-                    .then(this.carregarProdutos)
-            }
+            let tipo = this.tab.substring(0, this.tab.length - 1);
+            deletar(tipo, id).then(this.carregarDados);
         },
         toggleModal() {
             if ($(".modal.show").length) {
