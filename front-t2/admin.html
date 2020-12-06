@@ -33,16 +33,18 @@
             <div class="row">
                 <div class="form-group">
                     <label for="select-filtos" class="col-form-label float-left">Filtrar por:</label>
-                    <select id="select-filtos" v-model="filtroSelecionado" class="custom-select">
+                    <select id="select-filtos" v-model="filtroSelecionado" class="custom-select"
+                            @change="limparSelect()">
                         <option value="">Selecione</option>
                         <option v-for="filtro in filtros" v-bind:value="filtro.valor">{{ filtro.nome }}</option>
                     </select>
                 </div>
-                <div v-show="filtroSelecionado" class="form-group pl-2">
+                <div class="form-group pl-2" v-show="filtroSelecionado">
                     <label v-show="filtroSelecionado==='preco'" for="produto-id" class="col-form-label  float-left">Preço
                         Minimo:</label>
-                    <label v-show="filtroSelecionado==='idade'" for="produto-id" class="col-form-label  float-left">Idade:</label>
-                    <input v-model="filtro1" type="number" class="form-control">
+                    <label v-show="filtroSelecionado==='descricao'" for="produto-id" class="col-form-label  float-left">Descrição:</label>
+                    <input v-show="filtroSelecionado==='preco'" v-model="filtro1" type="number" class="form-control">
+                    <input v-show="filtroSelecionado==='descricao'" v-model="filtro1" type="text" class="form-control">
                 </div>
                 <div v-show="filtroSelecionado==='preco'" class="form-group pl-2">
                     <label for="produto-id" class="col-form-label  float-left">Preço
@@ -50,8 +52,8 @@
                     <input v-model="filtro2" type="number" class="form-control">
                 </div>
 
-                <div class="form-group pl-2" style="display: inline-grid;">
-                    <div class="btn btn-dark" style="place-self: end;">Filtrar</div>
+                <div v-show="filtroSelecionado" class="form-group pl-2" style="display: inline-grid;">
+                    <button class="btn btn-dark" style="place-self: end;" @click="filtrar()">Filtrar</button>
                 </div>
             </div>
         </nav>

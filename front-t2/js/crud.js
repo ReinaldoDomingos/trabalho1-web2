@@ -17,8 +17,12 @@ function criarConfig(url, metodo, data, filtros) {
     if (filtros && filtros.length) {
         requisicao.url += '?';
         filtros.forEach((filtro) => {
-            requisicao.url += filtro.nome + filtro.valor;
+            requisicao.url += filtro.nome + '=' + filtro.valor + '&';
         });
+
+        if (requisicao.url.charAt(requisicao.url.length - 1) === '&') {
+            requisicao.url = requisicao.url.substring(0, requisicao.url.length - 1);
+        }
     }
 
     if (data) {
@@ -27,9 +31,13 @@ function criarConfig(url, metodo, data, filtros) {
     return requisicao;
 }
 
-async function getItens(tipo) {
+async function getItens(tipo, filtros) {
     let url = API_URL + tipo;
-    var config = criarConfig(url);
+
+    if (!filtros) {
+        filtros = [];
+    }
+    var config = criarConfig(url, 'get', null, filtros);
 
     return await axios(config)
 }

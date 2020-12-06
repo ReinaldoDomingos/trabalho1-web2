@@ -36,10 +36,12 @@ new Vue({
         isLogado: false,
         msgErroLogin: '',
         filtros: [
-            {nome: 'Idade Minima', valor: 'idade'},
+            {nome: 'Descrição', valor: 'descricao'},
             {nome: 'Preço', valor: 'preco'}
         ],
-        filtroSelecionado: ''
+        filtroSelecionado: '',
+        filtro1: '',
+        filtro2: ''
     },
     mixins: [Vue2Filters.mixin],
     created() {
@@ -49,6 +51,25 @@ new Vue({
     mounted() {
     },
     methods: {
+        limparSelect() {
+            this.filtro1 = '';
+            this.filtro2 = '';
+        },
+        filtrar() {
+            if (this.filtroSelecionado === 'preco' && (this.filtro1 || this.filtro2)) {
+                var filtros = [];
+                if (this.filtro1) {
+                    filtros.push({nome: 'precoMinimo', valor: this.filtro1});
+                }
+                if (this.filtro2) {
+                    filtros.push({nome: 'precoMaximo', valor: this.filtro2});
+                }
+                this.carregarProdutos(filtros)
+            } else if (this.filtroSelecionado === 'descricao' && this.filtro1) {
+                var filtros = [{nome: 'descricao', valor: this.filtro1}];
+                this.carregarProdutos(filtros)
+            }
+        },
         autenticarAutomatico() {
             let usuario = sessionStorage.usuario;
             let senha = sessionStorage.senha;
@@ -98,17 +119,16 @@ new Vue({
             if (innerWidth <= 540)
                 this.navtoggle()
         },
-        carregarProdutos() {
-            getItens("produto")
+        carregarProdutos(filtros) {
+            getItens("produto", filtros)
                 .then(response => {
                     if (response.status === 200)
-                        if (response.data.length > 0) {
+                        if (response.data.length > 0 || filtros) {
                             this.produtos = response.data;
-                        } else {
-                            setProdutos()
-                                .then(() => {
-                                    this.carregarProdutos()
-                                })
+                        } else if (!filtros) {
+                            setProdutos().then(() => {
+                                this.carregarProdutos()
+                            })
                         }
                 })
         },
