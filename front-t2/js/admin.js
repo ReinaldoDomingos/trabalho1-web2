@@ -36,9 +36,13 @@ new Vue({
         modalAberto: false,
         filtroSelecionado: '',
         itemMenuSelecionado: 'inicio',
-        filtros: [
+        filtrosProdutos: [
             {nome: 'Descrição', valor: 'descricao'},
             {nome: 'Preço', valor: 'preco'}
+        ],
+        filtrosPessoas: [
+            {nome: 'Situação', valor: 'situacao'},
+            {nome: 'Responsável', valor: 'responsavel'}
         ],
         width: (innerWidth > 540) ? 'desktop' : 'mobile',
         user: {nome: "Fulano de Tal", email: "email@company.com"},
@@ -61,6 +65,7 @@ new Vue({
             this.tab = tab;
             this.pessoas = [];
             this.produtos = [];
+            this.filtroSelecionado = '';
 
             if (this.tab === 'produtos') {
                 this.carregarProdutos();
@@ -72,19 +77,40 @@ new Vue({
             this.filtro1 = '';
             this.filtro2 = '';
         },
+        limparFiltro() {
+            this.limparSelect();
+            if (this.tab === 'produtos') {
+                this.carregarProdutos();
+            }
+
+            if (this.tab === 'pessoas') {
+                this.carregarPessoas();
+            }
+        },
         filtrar() {
-            if (this.filtroSelecionado === 'preco' && (this.filtro1 || this.filtro2)) {
-                var filtros = [];
-                if (this.filtro1) {
-                    filtros.push({nome: 'precoMinimo', valor: this.filtro1});
-                }
-                if (this.filtro2) {
-                    filtros.push({nome: 'precoMaximo', valor: this.filtro2});
+            var filtros = [];
+
+            if (this.tab === 'produtos') {
+                if (this.filtroSelecionado === 'preco' && (this.filtro1 || this.filtro2)) {
+                    if (this.filtro1) {
+                        filtros.push({nome: 'precoMinimo', valor: this.filtro1});
+                    }
+                    if (this.filtro2) {
+                        filtros.push({nome: 'precoMaximo', valor: this.filtro2});
+                    }
+                } else if (this.filtroSelecionado === 'descricao' && this.filtro1) {
+                    filtros.push({nome: 'descricao', valor: this.filtro1});
                 }
                 this.carregarProdutos(filtros)
-            } else if (this.filtroSelecionado === 'descricao' && this.filtro1) {
-                var filtros = [{nome: 'descricao', valor: this.filtro1}];
-                this.carregarProdutos(filtros)
+            }
+
+            if (this.tab === 'pessoas') {
+                if (this.filtroSelecionado === 'situacao' && this.filtro1) {
+                    filtros.push({nome: 'situacao', valor: this.filtro1});
+                } else if (this.filtroSelecionado === 'responsavel' && this.filtro2) {
+                    filtros.push({nome: 'nomeResponsavel', valor: this.filtro2});
+                }
+                this.carregarPessoas(filtros);
             }
         },
         autenticarAutomatico() {

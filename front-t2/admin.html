@@ -42,7 +42,7 @@
                     <select id="select-filtos" v-model="filtroSelecionado" class="custom-select"
                             @change="limparSelect()">
                         <option value="">Selecione</option>
-                        <option v-for="filtro in filtros" v-bind:value="filtro.valor">{{ filtro.nome }}</option>
+                        <option v-for="filtro in filtrosProdutos" v-bind:value="filtro.valor">{{ filtro.nome }}</option>
                     </select>
                 </div>
                 <div class="form-group pl-2" v-show="filtroSelecionado">
@@ -60,6 +60,45 @@
 
                 <div v-show="filtroSelecionado" class="form-group pl-2" style="display: inline-grid;">
                     <button class="btn btn-dark" style="place-self: end;" @click="filtrar()">Filtrar</button>
+                </div>
+                <div v-show="filtroSelecionado" class="form-group pl-2"
+                     style="display: inline-grid;">
+                    <button class="btn btn-light" style="place-self: end;" @click="limparFiltro()">
+                        Limpar Filtro
+                    </button>
+                </div>
+            </div>
+
+            <div v-show="tab==='pessoas'" class="row">
+                <div class="form-group">
+                    <label for="select-filtos" class="col-form-label float-left">Filtrar por:</label>
+                    <select id="select-filtos" v-model="filtroSelecionado" class="custom-select"
+                            @change="limparSelect()">
+                        <option value="">Selecione</option>
+                        <option v-for="filtro in filtrosPessoas" v-bind:value="filtro.valor">{{ filtro.nome }}</option>
+                    </select>
+                </div>
+
+                <div class="form-group pl-2" v-show="filtroSelecionado==='situacao'">
+                    <label class="col-form-label  float-left">Situação:</label>
+                    <select id="select-situacao" v-model="filtro1" class="custom-select">
+                        <option value="ATIVO">Ativo</option>
+                        <option value="INATIVO">Inativo</option>
+                    </select>
+                </div>
+                <div class="form-group pl-2" v-show="filtroSelecionado==='responsavel'">
+                    <label class="col-form-label  float-left">Responsável:</label>
+                    <input v-model="filtro2" type="text" class="form-control">
+                </div>
+
+                <div v-show="filtroSelecionado" class="form-group pl-2" style="display: inline-grid;">
+                    <button class="btn btn-dark" style="place-self: end;" @click="filtrar()">Filtrar</button>
+                </div>
+                <div v-show="filtroSelecionado" class="form-group pl-2"
+                     style="display: inline-grid;">
+                    <button class="btn btn-light" style="place-self: end;" @click="limparFiltro()">
+                        Limpar Filtro
+                    </button>
                 </div>
             </div>
             <!--        Filtros     -->
@@ -105,6 +144,7 @@
                     <th colspan="2">Tipo</th>
                     <th colspan="2">CPF/CNPJ</th>
                     <th colspan="2">Nome</th>
+                    <th colspan="2">Responsável</th>
                     <th colspan="2">Situação</th>
                     <th colspan="2">Data de Nascimento</th>
                     <th>Ação</th>
@@ -116,6 +156,7 @@
                     <td colspan="2">{{ pessoa.tipo }}</td>
                     <td colspan="2">{{ pessoa.tipo === 'FISICA' ? pessoa.cpf : pessoa.cnpj }}</td>
                     <td colspan="2">{{ pessoa.nome }}</td>
+                    <td colspan="2">{{ pessoa.responsavelNome }}</td>
                     <td colspan="2">{{ pessoa.situacao | formatarEnum }}</td>
                     <td colspan="2">{{ pessoa.dataNascimento | formatarData }}
                     </td>

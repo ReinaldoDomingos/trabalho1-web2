@@ -65,7 +65,7 @@ public class PessoaService {
         return retorno.stream()
                 .filter(p -> isNull(situacao) || p.getSituacao().equals(situacao))
                 .filter(p -> isNull(idResponsavel) || (nonNull(p.getResponsavelId()) && p.getResponsavelId().equals(idResponsavel)))
-                .filter(p -> isNull(nomeResponsavel) || (nonNull(p.getResponsavelId()) && p.getResponsavel().getNome().equals(nomeResponsavel)))
+                .filter(p -> isNull(nomeResponsavel) || (nonNull(p.getResponsavelId()) && p.getResponsavel().getNome().toLowerCase().contains(nomeResponsavel.toLowerCase())))
                 .collect(Collectors.toList());
 
     }

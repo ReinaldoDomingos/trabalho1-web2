@@ -22,6 +22,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.time.LocalDate;
 
+import static java.util.Objects.nonNull;
+
 @Data
 @Entity
 @NoArgsConstructor
@@ -50,6 +52,9 @@ public class Pessoa {
     @Column(name = "PES_RESPONSAVEL")
     private Long responsavelId;
 
+    @Transient
+    private String responsavelNome;
+
     @Column(name = "PES_SITUACAO")
     private EnumSituacao situacao;
 
@@ -64,5 +69,9 @@ public class Pessoa {
 
     public String getTipo() {
         return this.tipo.toUpperCase().replace("PESSOA", "");
+    }
+
+    public String getResponsavelNome() {
+        return nonNull(responsavel) ? responsavel.getNome() : null;
     }
 }
