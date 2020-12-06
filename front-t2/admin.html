@@ -30,13 +30,13 @@
                 <li id="btnListaDeProdutos" v-bind:class="{'ativo':tab==='produtos'}" @click="mostrarTab('produtos')">
                     Produtos
                 </li>
-                <li id="btnListaDePessoas" v-bind:class="{'ativo':tab==='produtos'}" @click="mostrarTab('produtos')">
+                <li id="btnListaDePessoas" v-bind:class="{'ativo':tab==='pessoas'}" @click="mostrarTab('pessoas')">
                     Pessoas
                 </li>
             </ul>
 
             <!--        Filtros     -->
-            <div class="row">
+            <div v-show="tab==='produtos'" class="row">
                 <div class="form-group">
                     <label for="select-filtos" class="col-form-label float-left">Filtrar por:</label>
                     <select id="select-filtos" v-model="filtroSelecionado" class="custom-select"
@@ -68,10 +68,11 @@
 
         <!--        Grid     -->
         <div v-show="isLogado" class="table-responsive">
-            <table id="produtos" class="table table-hover table-sm " v-show="tab==='produtos'">
-                <button id="btnAdd" class="btn add btn-success float-right" @click="adicionarItem()">
-                    <i class="material-icons">add</i><span>Adicionar</span>
-                </button>
+            <button id="btnAdd" class="btn add btn-success float-right" @click="adicionarItem()">
+                <i class="material-icons">add</i><span>Adicionar</span>
+            </button>
+
+            <table id="produtos" class="table table-hover table-sm" v-show="tab==='produtos'">
                 <thead>
                 <tr>
                     <th colspan="2">Descrição</th>
@@ -94,8 +95,40 @@
                 </tr>
                 </tbody>
             </table>
+            <p id="msg-list-empty" class="text-center" v-show="tab==='produtos' && produtos.length===0">
+                Não há produtos cadastrados
+            </p>
 
-            <p id="msg-list-empty" class="text-center" v-show="produtos.length===0">Não há produtos cadastrados</p>
+            <table id="pessoas" class="table table-hover table-sm " v-show="tab==='pessoas'">
+                <thead>
+                <tr>
+                    <th colspan="2">Tipo</th>
+                    <th colspan="2">CPF/CNPJ</th>
+                    <th colspan="2">Nome</th>
+                    <th colspan="2">Situação</th>
+                    <th colspan="2">Data de Nascimento</th>
+                    <th>Ação</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr v-for="pessoa in orderBy(pessoas,'nome')">
+                    <td colspan="2">{{ pessoa.tipo }}</td>
+                    <td colspan="2">{{ pessoa.tipo === 'FISICA' ? pessoa.cpf : pessoa.cnpj }}</td>
+                    <td colspan="2">{{ pessoa.nome }}</td>
+                    <td colspan="2">{{ pessoa.situacao | formatarEnum }}</td>
+                    <td colspan="2">{{ pessoa.dataNascimento | formatarData }}
+                    </td>
+                    <td>
+                        <i class="material-icons btn btn-primary" @click="editarItem(pessoa)">edit</i>
+                        <i class="material-icons btn btn-danger" @click="deletarItem(pessoa.id)">delete</i>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <p id="msg-list-empty" class="text-center" v-show="tab==='pessoas' && pessoas.length===0">
+                Não há pessoas cadastradas
+            </p>
         </div>
         <!--        Grid     -->
 
@@ -234,5 +267,6 @@
 <script src="js/login.js"></script>
 <script src="js/crud.js"></script>
 <script src="js/admin.js"></script>
+<script src="js/utils.js"></script>
 </body>
 </html>

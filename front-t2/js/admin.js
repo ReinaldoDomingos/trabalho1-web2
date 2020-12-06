@@ -15,11 +15,15 @@ function estaPreeenchidoCamposObrigatorios(item) {
 new Vue({
     el: "#app",
     data: {
-        msgFooter: "Easy buy 2020 &copy; Todos os direitos reservados",
-        user: {nome: "Fulano de Tal", email: "email@company.com"},
-        width: (innerWidth > 540) ? 'desktop' : 'mobile',
-        modalAberto: false,
-        editando: "",
+        filtro1: '',
+        filtro2: '',
+        pessoas: [],
+        produtos: [],
+        editando: '',
+        modalTitle: "",
+        tab: "produtos",
+        isLogado: false,
+        msgErroLogin: '',
         itemEditando: {
             id: "",
             descricao: "",
@@ -28,20 +32,17 @@ new Vue({
             precoVendaJuridica: "",
             quantidadeEstoque: "",
         },
-        itemMenuSelecionado: 'inicio',
         title: "Easy buy",
-        tab: "produtos",
-        produtos: [],
-        modalTitle: "",
-        isLogado: false,
-        msgErroLogin: '',
+        modalAberto: false,
+        filtroSelecionado: '',
+        itemMenuSelecionado: 'inicio',
         filtros: [
             {nome: 'Descrição', valor: 'descricao'},
             {nome: 'Preço', valor: 'preco'}
         ],
-        filtroSelecionado: '',
-        filtro1: '',
-        filtro2: ''
+        width: (innerWidth > 540) ? 'desktop' : 'mobile',
+        user: {nome: "Fulano de Tal", email: "email@company.com"},
+        msgFooter: "Easy buy 2020 &copy; Todos os direitos reservados"
     },
     mixins: [Vue2Filters.mixin],
     created() {
@@ -51,6 +52,22 @@ new Vue({
     mounted() {
     },
     methods: {
+        mostrarTab(tab) {
+            if (this.tab === tab) {
+                return;
+            }
+
+            console.log('tab', tab)
+            this.tab = tab;
+            this.pessoas = [];
+            this.produtos = [];
+
+            if (this.tab === 'produtos') {
+                this.carregarProdutos();
+            } else if (this.tab === 'pessoas') {
+                this.carregarPessoas();
+            }
+        },
         limparSelect() {
             this.filtro1 = '';
             this.filtro2 = '';
@@ -120,23 +137,29 @@ new Vue({
                 this.navtoggle()
         },
         carregarProdutos(filtros) {
-            getItens("produto", filtros)
-                .then(response => {
-                    if (response.status === 200)
-                        if (response.data.length > 0 || filtros) {
-                            this.produtos = response.data;
-                        } else if (!filtros) {
-                            setProdutos().then(() => {
-                                this.carregarProdutos()
-                            })
-                        }
-                })
+            getItens("produto", filtros).then(response => {
+                if (response.status === 200 && (response.data.length > 0 || filtros)) {
+                    this.produtos = response.data;
+                } else if (!filtros) {
+                    setProdutos().then(() => {
+                        this.carregarProdutos()
+                    })
+                }
+            })
+        },
+        carregarPessoas(filtros) {
+            getItens("pessoa", filtros).then(response => {
+                if (response.status === 200 && (response.data.length > 0 || filtros)) {
+                    this.pessoas = response.data;
+                } else if (!filtros) {
+                    // setPessoas().then(() => {
+                    //     this.carregarPessoas()
+                    // })
+                }
+            })
         },
         carregarDados() {
             this.carregarProdutos()
-        },
-        mostrarTab(tab) {
-            this.tab = tab
         },
         adicionarItem() {
             this.toggleModal()
@@ -240,6 +263,12 @@ new Vue({
     filters: {
         formatarReal(value) {
             return 'R$' + ((value.toString().indexOf(',') === -1) ? value + ',00' : value)
+        },
+        formatarData(dataNascimento) {
+            return dataNascimento[2] + ' de ' + meses[dataNascimento[1] - 1] + ' de ' + dataNascimento[0];
+        },
+        formatarEnum(chave) {
+            return enums[chave];
         }
     }
 });
